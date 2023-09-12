@@ -22,40 +22,76 @@ El problema radica en posibles paredes flotantes colocadas de manera aleatoria a
 
 ### Planteamiento
 
-El sistema completo se puede ver como un grafo que puede o no tener conexiones entre sus diferentes nodos, dependiendo de la existencia de las paredes flotantes. Considerando que pueden existir estas paredes, cada nodo se conecta con otro siempre de manera octogonal, por lo que un nodo puede tener máximo 4 nodos adyacentes. Considerando el laberinto en la convocatoria:
+El sistema completo se puede ver como un grafo que puede o no tener conexiones entre sus diferentes vertices, dependiendo de la existencia de las paredes flotantes. Considerando que pueden existir estas paredes, cada vértice se conecta con otro siempre de manera octogonal, por lo que un vértice puede tener máximo 4 vértices adyacentes. Considerando el laberinto en la convocatoria:
 
 <div style="text-align: center;">
 <img src="../Figures/zoneA_maze1.jpg" width="50%" alt="Original maze design">
 <img src="../Figures/IMG_6484.jpg" width="50%" alt="OG maze representation as graph">
 </div>
 
-Se requiere un algoritmo que explore todos los nodos, incluso si se llega a encontrar la casilla de salida $(E)$. Esto se debe a que primero se tiene que determinar el color que tiene exactamente 5 apariciones $(U)$. El nodo $K$ no se debe acceder y por tanto no deben de existir caminos hacia el mismo.
+Se requiere un algoritmo que explore todos los vértices, incluso si se llega a encontrar la casilla de salida $(E)$. Esto se debe a que primero se tiene que determinar el color que tiene exactamente 5 apariciones $(U)$. El vértice $K$ no se debe acceder y por tanto no deben de existir caminos hacia el mismo.
 
 ### Depth First Search (DFS)
+DFS es un algoritmo para atravesar o buscar vértices a través de grafos. A diferencia de otros algoritmos, como el BFS (Breath First Search), recorre el grafo conforme va encontrando nuevos vértices. Es decir, cuando encuentra un nuevo vértice, lo empieza a explorar en ese momento y pausa la exploración del vértice anterior para más adelante.
+
+Esta pausa se puede implementar de dos maneras diferentes:
+* Recursividad: A través de recursividad se repite el proceso de búsqueda de vértices adyacentes para cada vértice que encuentra. 
+    1. La función de búsqueda sobre un vértice padre encuentra un vértice hijo.
+    1. Por ser encontrado, la función se llama sobre el vértice hijo, efectivamente pausando la del vértice padre.
+    2. Cuando este vértice hijo se exploró completamente, la función termina. 
+    3. Se reanuda la función de exploración del vértice padre.
+
+* Stack: Se crea esta estructura de tipo *stack* y se van añadiendo y eliminando vértices del mismo según se vayan encontrando y explorando vértices: cuando se añade un vértice al stack se pausa su exploración y cuando se elimina se reanuda.
+
 
 ###  Desarrollo de eficiencia particular
+Debido a que estamos atados a un medio físico, donde se van encontrando vértices conforme el robot explora el laberinto, se prefiere un algoritmo donde se requiera la menor cantidad de aristas para visitar todos los vértices (i.e.: se recorra la menor distancia para visitarlos todos.) Por ello se debe elegir un algoritmo que no regrese por los vértices y aristas por los que ya pasó a menos que sea necesario.
 
 Se puede alcanzar mayor eficiencia al:
 
-1. Guardar al inicio un hashmap de nodos ```max_v``` con su cantidad máxima de aristas (i.e.: cantidad máxima de visitas desde diferentes nodos).
-    * Llave: nodo $y$
+1. Guardar al inicio un hashmap de vértices ```max_v``` con la cantidad máxima de aristas o conexiones de cada vértice con otros (i.e.: cantidad máxima de veces que se puede encontrar un vértice desde diferentes vértices), donde:
+    * Llave: vértice $y$
     * Valor: cantidad máxima de aristas $x$
-2. Guardar con cada exploración un hashmap de nodos ```found_v``` con la cantidad de aristas adyacentes encontradas al momento (i.e.: cantidad de veces que se ha encontrado hasta el momento desde diferentes nodos.)
-    * Llave: nodo $y$
+2. Guardar con cada exploración un hashmap de vértices ```found_v``` con la cantidad de aristas o conexiones que cada vértice tiene con otros al momento (i.e.: cantidad de veces que se ha encontrado el vértice desde otros diferentes vértices hasta el momento), donde:
+    * Llave: vértice $y$
     * Valor: cantidad de aristas encontradas al momento $a$
-3. Comparar ambos valores con cada visita al nodo.
-    * Si $x=a$, ya no es necesario explorar el nodo encontrado debido a que ya no hay más por encontrar. Se marca el nodo encontrado como explorado y no se tiene que pasar por el mismo.
+3. Comparar ambos valores con cada visita a $y$.
+    * Si $x=a$, ya no es necesario explorar $y$ debido a que ya no puede tener más conexiones. $y$ se marca como explorado y no es necesario visitarlo en un futuro.
 
 
-Tomando en cuenta el anterior razonamiento, se puede alcanzar mayor eficiencia si se plantea un peso para cada arista que corresponda con el nivel de profundidad del grafo. Esto se propone con el objetivo de marcar como visitados y explorados la mayor cantidad de nodos a la derecha del laberinto antes de avanzar hacia la izquierda. Por ello, se prioriza explorar nodos encontrados con la siguiente jerarquía:
+Tomando en cuenta el anterior razonamiento, se puede alcanzar mayor eficiencia si se plantea un peso para cada arista que corresponda con el nivel de profundidad del grafo de derecha a izquierda. El objetivo es marcar como visitados y explorados la mayor cantidad de vértices a la derecha del laberinto antes de avanzar hacia la izquierda. Por ello, se prioriza explorar vértices encontrados con la siguiente jerarquía:
 
-1. Derecha, con peso $-1$
-2. Abajo o Arriba, con peso $0$
-3. Izquierda, con peso $1$
+| Dirección | Peso |
+| :-: | :-: |
+| Derecha | $-1$ |
+| Abajo o Arriba | $0$ |
+| Izquierda | $1$ |
 
 Donde los números con menor peso tienen mayor prioridad.
 
-### Implementación en C++
+Debido a las consideraciones únicas mencionadas anteriormente, será mejor que se puedan modificar los vértices a explorar según convenga. Por ello, el algoritmo que involucra stack se utiliza sobre el algoritmo de recursividad. El stack puede ser modificado a conveniencia considerando las prioridades de exploración de vértices de manera más sencilla que el algoritmo recursivo.
+
+### Implementación de Grafo en C++
+
+Para mantener un orden en el programa principal se va a crear un nuevo archivo que contenga la definición de una clase ```Graph```. Esta estructura se va a utilizar para almacenar las casillas (vértices) que recorre el robot. Los elementos básicos que debe contener son:
+
+```cpp
+class Graph {
+    private:
+        // Number of vertices
+        int num_v;
+        // Vertex position of robot
+        int pos;
+        // Adjacency list (edges of each vertex)
+        vector<int> adj[num_v];
+
+    public:
+        // Constructors
+        Graph(int v);
+        // Add an undirected edge between two vertices
+        void addEdge(int v1, int v2);
+};
+``` 
 
 ### Escalabilidad
 
@@ -69,4 +105,7 @@ Donde los números con menor peso tienen mayor prioridad.
 ## Referencias
 
 [Convocatoria oficial](../Candidates%202023.pdf)
+
 [Pensamiento algorítmico de DFS & BFS](https://www.youtube.com/watch?v=pcKY4hjDrxk&ab_channel=AbdulBari)
+
+[DFS Iterativo](https://www.geeksforgeeks.org/iterative-depth-first-traversal/)
