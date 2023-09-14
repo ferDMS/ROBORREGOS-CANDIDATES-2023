@@ -17,5 +17,10 @@ class Graph {
         void addEdge(int v1, int v2);
 };
 
+Graph::Graph(int v) {
+    this->num_v = v;
+    // The graph expands from the starting vertex (0)
+    this->pos = 0;
+}
 
 #endif

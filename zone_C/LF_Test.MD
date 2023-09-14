@@ -77,7 +77,7 @@ void loop() {
 
 
 ## Testing
-<a href="../media/IMG_6509.MOV"><img src="https://youtube.com/shorts/zt0X3Zx6c1c"></a>
+<a href="https://youtube.com/shorts/zt0X3Zx6c1c"><img src="../media/LF_test_ss.jpg"></a>
 Testing TCRT5000 Module
 
 
