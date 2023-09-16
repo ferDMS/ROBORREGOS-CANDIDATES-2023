@@ -1,7 +1,7 @@
 # Testing the *TCRT5000* Module
 
-
 ## Module Description
+
 * Voltage: 5V
 * Dimensions: 69 mm x 28 mm
 * Features five TCRT5000 infrared reflection sensors
@@ -32,6 +32,7 @@ Test Circuit Model
 
 
 ## Code
+
 Reading the input from each of the 5 infrared sensors every $0.5\  s$ and displaying their boolean values on the serial monitor. A boolean value of $0$ is returned when no infrared rays are detected, which usually occurs when the sensor is pointed at a great distance from any surface or when it is pointed at a non-reflective surface. A boolean value of $1$ is returned when the emitted infrared rays bounce back to the sensor, which can only happen when they are emitted onto a close reflective surface.
 
 ```cpp
@@ -77,10 +78,12 @@ void loop() {
 
 
 ## Testing
-<a href="https://youtube.com/shorts/zt0X3Zx6c1c"><img src="../media/LF_test_ss.jpg"></a>
+
+<a href="https://youtube.com/shorts/zt0X3Zx6c1c"><img src="../media/LF_test_ss.jpg" alt="Testing TCRT5000 Module Video"></a>
 Testing TCRT5000 Module
 
 
 ## References
+
 [Module Description](https://www.tinytronics.nl/shop/en/sensors/optical/infrared/5x-tcrt5000-tracking-and-object-sensor-module)
 

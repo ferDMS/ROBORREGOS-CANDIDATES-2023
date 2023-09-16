@@ -14,8 +14,10 @@ class Graph {
         std::vector<std::vector<int>> adj;
         // Stack of exploration paused vertices
         std::stack<int> stack;
-        // Array of encountered or visited vertices
-        std::vector<bool> visited;
+        // Array for count of visits to a vertex (if 0 then not visited)
+        std::vector<int> visited;
+        // Array of maximum possible edges
+        std::vector<int> max_v;
 
     public:
         // Constructors
@@ -24,17 +26,17 @@ class Graph {
         int getPos();
         std::vector<int> getEdges(int v);
         // Setters
-        void addEdge(int v1, int v2);
         void setPos(int pos);
+        void addEdge(int v1, int v2);
         // Other methods
         void evalPath();
 };
 
-Graph::Graph(int num_v) {
+Graph::Graph(int num_v, int pos) {
     this->num_v = num_v;
-    this->pos = 0;  // Root = 0
+    pos = 0;  // Root = 0
     this->adj = {{}};
-    this->visited = {0};
+    this->visited.fill(visited);
 }
 
 int Graph::getPos() {

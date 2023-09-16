@@ -29,11 +29,11 @@ void loop() {
   S7 = digitalRead(IRS_Front);
 
 
-  Serial.println("S1\tS2\tS3\tS4\tS5");
-  sprintf(strBuf, "%d\t%d\t%d\t%d\t%d", S1, S2, S3, S4, S5, S6, S7);
+  Serial.println("S1\tS2\tS3\tS4\tS5\tS6\tS7");
+  sprintf(strBuf, "%d\t%d\t%d\t%d\t%d\t%d\t%d", S1, S2, S3, S4, S5, S6, S7);
   Serial.println(strBuf);
 
   
-  delay(500);
+  delay(50);
 
 }

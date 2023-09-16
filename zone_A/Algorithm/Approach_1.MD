@@ -43,9 +43,29 @@ Where numbers with lower weight have higher priority.
 
 Due to the unique considerations mentioned above, it is better to be able to modify the vertices to be explored as needed. Therefore, the algorithm involving a stack is preferred over the recursive algorithm. It is easier to implement these specific routes on a stack than on a recursive algorithm.
 
-## Implementation of a Graph in C++
+## Graph class in C++
 
 To maintain order in the main program, a new file will be created containing the definition of a ```Graph``` class. This structure will be used to store the squares (vertices) that the robot traverses. The basic elements it should contain are:
+* Number of vertices
+* Saved vertex position of the robot
+* Adjacency list
+* DFS related data
+* Maze specific data
+
+### Naming Vertices
+In order to correctly save each vertex as a unique vertex in order to tell each apart, they have to distinguished by their relative location to the initial vertex $S$. Because there might be multiple vertices that are at equal distances from $S$, one cannot tell the difference of two same-level vertices from the starting square by using a single integer. As a result, coordinates of 2 integers must be used, one for the $x$ axis, comprising movements to the left and right, and the $y$ axis, comprising upwards and downwards movements.
+
+This can be implemented using a 2D vector (a vector of vectors)
+
+<!-- 
+### Integrating DFS
+
+LEFT TO EDIT
+
+The `Graph` class needs to store multiple structures and data types used by the DFS algorithm, which should be initialized with the known values. Since the location of the $S$ square in the maze is unknown, it's more convenient to designate the root vertex as $S$ and label it as 0. The subsequent encountered vertices can be named as consecutive integers ($1, 2, 3, \dots, n-1$), where $n$ represents the total number of vertices in the graph. In the case of Zone A, $n=16$.
+ -->
+
+### Basic Implementation
 
 ```cpp
 class Graph {
