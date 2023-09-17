@@ -2,7 +2,7 @@
 
 ## Deprecated Approach
 
-This approach was developed contemplating that the position of the initial square $S$ was randomized every round as a fix for Approach 1. Luckily, Approach 1 was actually correct and this approach is not needed anymore
+This approach was developed contemplating that the position of the initial square $S$ was randomized every round as a fix for Approach 1. Luckily, this is not the case and Approach 1 is still valid.
 
 ## ~~Problem with Approach 1~~
 

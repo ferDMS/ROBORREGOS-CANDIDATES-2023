@@ -3,60 +3,141 @@
 
 # include <vector>
 # include <stack>
+# include <unordered_map>
+# include "Vertex.h"
 
 class Graph {
     private:
         // Number of vertices
-        int num_v;
-        // Vertex position of robot
-        int pos;
-        // Adjacency array (index: vertex, values: connected vertices)
-        std::vector<std::vector<int>> adj;
-        // Stack of exploration paused vertices
-        std::stack<int> stack;
-        // Array for count of visits to a vertex (if 0 then not visited)
-        std::vector<int> visited;
-        // Array of maximum possible edges
-        std::vector<int> max_v;
+        int n;
+        // Graph vertex position of the robot
+        Vertex pos;
+        // Adjacency map.
+        // adj[v].size() is the # of edges found until now for vertex v
+        std::unordered_map<Vertex, std::vector<Vertex>> adj;
+        // Stack of vertices paused
+        std::stack<Vertex> stack;
+        // Map to save if a vertex has been visited or fully explored (if 0 then it hasn't)
+        std::unordered_map<Vertex, bool> visited;
+        // Map of maximum possible edges for each vertex
+        std::unordered_map<Vertex, int> max_edges;
 
     public:
         // Constructors
-        Graph(int num_v);
+        Graph();
+        Graph(int nIn);
+        Graph(std::vector<Vertex> vertices);
+        Graph(std::unordered_map<Vertex, int> max_edgesIn);
+        Graph(std::unordered_map<Vertex, std::vector<Vertex>> adjIn);
         // Getters
-        int getPos();
-        std::vector<int> getEdges(int v);
+        Vertex getPos();
+        std::vector<Vertex> getEdges(Vertex v);
+        int getMaxEdges(Vertex v);
+        bool getVisitedStatus(Vertex v);
         // Setters
-        void setPos(int pos);
-        void addEdge(int v1, int v2);
+        void setPos(Vertex posIn);
+        void setPos(int x, int y);
+        void setMaxEdges(Vertex v, int edges);
+        void addVertex(Vertex v)
+        void addVertex(int x, int y);
+        void addEdge(Vertex v1, Vertex v2);
+        void setAsVisited(Vertex v);
         // Other methods
         void evalPath();
 };
 
-Graph::Graph(int num_v, int pos) {
-    this->num_v = num_v;
-    pos = 0;  // Root = 0
-    this->adj = {{}};
-    this->visited.fill(visited);
+Graph::Graph() {
+    n = 0;
 }
 
-int Graph::getPos() {
+Graph::Graph(int nIn) {
+    n = nIn;
+    pos.x = 0;
+    pos.y = 0;
+    adj[pos] = {};
+    visited[pos] = 0;
+}
+
+Graph::Graph(std::vector<Vertex> vertices) {
+    n = vertices.size();
+    pos.x = 0;
+    pos.y = 0;
+    for (int i = 0; i < n; i++) {
+        adj[vertices[i]] = {};
+        visited[vertices[i]] = 0;
+    }
+}
+
+Graph::Graph(std::unordered_map<Vertex, int> max_edgesIn) {
+    n = max_edgesIn.size();
+    pos.x = 0;
+    pos.y = 0;
+    max_edges = max_edgesIn;
+    for (auto& it : max_edges) {
+        adj[it.first] = {};
+        visited[it.first] = 0;
+    }
+}
+
+Graph::Graph(std::unordered_map<Vertex, std::vector<Vertex>> adjIn) {
+    n = adjIn.size();
+    pos.x = 0;
+    pos.y = 0;
+    adj = adjIn;
+    for (auto& it : adj) {
+        visited[it.first] = 0;
+    }
+}
+
+Vertex Graph::getPos() {
     return pos;
 }
 
-std::vector<int> Graph::getEdges(int v) {
+std::vector<Vertex> Graph::getEdges(Vertex v) {
     return adj[v];
 }
 
-void Graph::addEdge(int v1, int v2) {
+int Graph::getMaxEdges(Vertex v) {
+    return max_edges[v];
+}
+
+bool Graph::getVisitedStatus(Vertex v) {
+    return visited[v];
+}
+
+void Graph::setPos(Vertex posIn) {
+    pos = posIn;
+}
+
+void Graph::setPos(int x, int y) {
+    pos.x = x;
+    pos.y = y;
+}
+
+void Graph::setMaxEdges(Vertex v, int edges) {
+    max_edges[v] = edges;
+}
+
+void Graph::addVertex(Vertex v) {
+    adj[v] = {};
+    visited[v] = 0;
+}
+
+void Graph::addVertex(int x, int y) {
+    Vertex v(x, y);
+    addVertex(v);
+}
+
+void Graph::addEdge(Vertex v1, Vertex v2) {
     adj[v1].push_back(v2);
     adj[v2].push_back(v1);
 }
 
-void Graph::setPos(int pos) {
-    this->pos = pos;
+void Graph::setAsVisited(Vertex v) {
+    visited[v] = 1;
 }
 
-void evalPath() {
+void Graph::evalPath() {
     /*
     Quick pseudocode for DFS path generation
 
