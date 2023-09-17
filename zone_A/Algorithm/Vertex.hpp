@@ -7,7 +7,7 @@ struct Vertex {
     // Variables
     int x;
     int y;
-    // Constructor
+    // Constructors
     Vertex();
     Vertex(int xIn, int yIn);
     // Methods

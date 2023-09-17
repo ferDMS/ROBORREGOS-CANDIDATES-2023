@@ -1,10 +1,10 @@
 #ifndef GRAPH
 #define GRAPH
 
-# include <vector>
-# include <stack>
-# include <unordered_map>
-# include "Vertex.h"
+#include <vector>
+#include <stack>
+#include <unordered_map>
+#include "Edge.hpp"
 
 class Graph {
     private:
@@ -14,7 +14,7 @@ class Graph {
         Vertex pos;
         // Adjacency map.
         // adj[v].size() is the # of edges found until now for vertex v
-        std::unordered_map<Vertex, std::vector<Vertex>> adj;
+        std::unordered_map<Vertex, std::vector<Edge>> adj;
         // Stack of vertices paused
         std::stack<Vertex> stack;
         // Map to save if a vertex has been visited or fully explored (if 0 then it hasn't)
@@ -26,21 +26,22 @@ class Graph {
         // Constructors
         Graph();
         Graph(int nIn);
-        Graph(std::vector<Vertex> vertices);
+        Graph(std::vector<Edge> vertices);
         Graph(std::unordered_map<Vertex, int> max_edgesIn);
-        Graph(std::unordered_map<Vertex, std::vector<Vertex>> adjIn);
+        Graph(std::unordered_map<Vertex, std::vector<Edge>> adjIn);
         // Getters
+        int size();
         Vertex getPos();
-        std::vector<Vertex> getEdges(Vertex v);
+        std::vector<Edge> getEdges(Vertex v);
         int getMaxEdges(Vertex v);
         bool getVisitedStatus(Vertex v);
         // Setters
         void setPos(Vertex posIn);
-        void setPos(int x, int y);
-        void setMaxEdges(Vertex v, int edges);
-        void addVertex(Vertex v)
-        void addVertex(int x, int y);
-        void addEdge(Vertex v1, Vertex v2);
+        void setMaxEdges(Vertex v, int n_edges);
+        void addVertex(Vertex v);
+        void addEdge(Edge e);
+        void addEdgePair(Edge e);
+        void addEdgePair(Edge e, int weight);
         void setAsVisited(Vertex v);
         // Other methods
         void evalPath();
@@ -58,13 +59,13 @@ Graph::Graph(int nIn) {
     visited[pos] = 0;
 }
 
-Graph::Graph(std::vector<Vertex> vertices) {
+Graph::Graph(std::vector<Edge> vertices) {
     n = vertices.size();
     pos.x = 0;
     pos.y = 0;
     for (int i = 0; i < n; i++) {
-        adj[vertices[i]] = {};
-        visited[vertices[i]] = 0;
+        adj[vertices[i].u] = {};
+        visited[vertices[i].u] = 0;
     }
 }
 
@@ -79,7 +80,7 @@ Graph::Graph(std::unordered_map<Vertex, int> max_edgesIn) {
     }
 }
 
-Graph::Graph(std::unordered_map<Vertex, std::vector<Vertex>> adjIn) {
+Graph::Graph(std::unordered_map<Vertex, std::vector<Edge>> adjIn) {
     n = adjIn.size();
     pos.x = 0;
     pos.y = 0;
@@ -89,11 +90,15 @@ Graph::Graph(std::unordered_map<Vertex, std::vector<Vertex>> adjIn) {
     }
 }
 
+int Graph::size() {
+    return n;
+}
+
 Vertex Graph::getPos() {
     return pos;
 }
 
-std::vector<Vertex> Graph::getEdges(Vertex v) {
+std::vector<Edge> Graph::getEdges(Vertex v) {
     return adj[v];
 }
 
@@ -109,28 +114,28 @@ void Graph::setPos(Vertex posIn) {
     pos = posIn;
 }
 
-void Graph::setPos(int x, int y) {
-    pos.x = x;
-    pos.y = y;
-}
-
-void Graph::setMaxEdges(Vertex v, int edges) {
-    max_edges[v] = edges;
+void Graph::setMaxEdges(Vertex v, int n_edges) {
+    max_edges[v] = n_edges;
 }
 
 void Graph::addVertex(Vertex v) {
     adj[v] = {};
     visited[v] = 0;
+    n++;
 }
 
-void Graph::addVertex(int x, int y) {
-    Vertex v(x, y);
-    addVertex(v);
+void Graph::addEdge(Edge e) {
+    adj[e.u].push_back(e);
 }
 
-void Graph::addEdge(Vertex v1, Vertex v2) {
-    adj[v1].push_back(v2);
-    adj[v2].push_back(v1);
+void Graph::addEdgePair(Edge e) {
+    adj[e.u].push_back(e);
+    adj[e.v].push_back(e.reversed());
+}
+
+void Graph::addEdgePair(Edge e, int weight) {
+    adj[e.u].push_back(e);
+    adj[e.v].push_back(e.reversed(weight));
 }
 
 void Graph::setAsVisited(Vertex v) {
