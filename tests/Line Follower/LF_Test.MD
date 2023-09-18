@@ -16,18 +16,18 @@
   * CLP: Digital output of front switch
   * NEAR: Digital output of front sensor
 
-![TCRT5000 Module](../media/5xlinefollower.jpg)
+![TCRT5000 Module](../../media/5xlinefollower.jpg)
 TCRT5000 Module
 
 ## Connections
 
-![Arduino Nano Connections](../media/IMG_6502.JPG)
+![Arduino Nano Connections](../../media/IMG_6502.JPG)
 Arduino Nano Connections
 
-![TCRT5000 Connections](../media/IMG_6503.JPG)
+![TCRT5000 Connections](../../media/IMG_6503.JPG)
 TCRT5000 Connections
 
-![Test Circuit Model](../media/lf_test_circuit.png)
+![Test Circuit Model](../../media/lf_test_circuit.png)
 Test Circuit Model
 
 ## Code
@@ -77,7 +77,8 @@ void loop() {
 
 ## Testing
 
-<a href="https://youtube.com/shorts/zt0X3Zx6c1c"><img src="../media/LF_test_ss.jpg" alt="Testing TCRT5000 Module Video"></a>
+<a href="https://youtube.com/shorts/zt0X3Zx6c1c"><img src="../../media/LF_test_ss.jpg" alt="Testing TCRT5000 Module Video"></a>
+
 Testing TCRT5000 Module
 
 ## References

@@ -16,7 +16,7 @@ Considering this, greater efficiency can be achieved by:
     * Value: vector of edges $(e)$
 3. The number of elements on the vector $(e\text{.size})$ equals the found edges count for each vertex $(a)$. In other words, the number of times the vertex has been found from different vertices up to that point.
 4. Comparing both values every time $y$ is reached from a different edge.
-    * While $a<x$ there are possibly more edges to be encountered for vertex $y$
+    * While $a < x$ there are possibly more edges to be encountered for vertex $y$
     * If $a==x$, it is no longer necessary to explore $y$ as there are no more possible adjacent vertices left to explore. Thus, $y$ is marked as explored and does not need to be visited at a later time.
 
 The `max_edges` hashmap can be constructed by considering the position of each vertex on the maze:
@@ -27,10 +27,11 @@ The `max_edges` hashmap can be constructed by considering the position of each v
 
 The construction of `max_edges`, for Zone A, will have the following values:
 
-![Maze as graph with maximum edges visualized](../../media/max_edges.png "Maze as graph with maximum edges visualized")
+![Maze as graph with maximum edges visualized](../media/max_edges.png "Maze as graph with maximum edges visualized")
 Visualization of maximum edges on Zona A graph
 
 The definition of the hashmap, using the Vertex structure, should be
+
 ```cpp
 std::unordered_map<Vertex, int> max_edges;
 ```
@@ -53,7 +54,6 @@ The primary reason to do this is to visit as many vertices as possible before go
 ## Selecting a DFS algorithm
 
 Due to the unique considerations mentioned above, being able to mark the vertices as explored and pause their exploration on command is desired. This specifications are easier to apply on a stack structure than in a recursive algorithm. Therefore, the problem will be addressed with a stack structure.
-
 
 ## References
 

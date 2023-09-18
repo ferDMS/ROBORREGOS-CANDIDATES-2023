@@ -6,11 +6,11 @@ On a graph, an edge is a link or connection between 2 vertices. Its most basic e
 * [Direction](#direction)
 * [Weight](#weight)
 
-The [[Edge]] structure defines directed edges that can be assigned a weight.
+The [Edge](./Edge.MD) structure defines directed edges that can be assigned a weight.
 
 ## Direction
 
-When defining a directed edge it is necessary that both endpoints are saved and separated, one as the source vertex `u`, and the other as the destination vertex `v`. These are saved as [[Vertex]] objects, defined as:
+When defining a directed edge it is necessary that both endpoints are saved and separated, one as the source vertex `u`, and the other as the destination vertex `v`. These are saved as [Vertex](./Vertex.MD) objects, defined as:
 
 ```cpp
 Vertex u;  // Source
@@ -19,7 +19,7 @@ Vertex v;  // Destination
 
 ## Weight
 
-If a weight is not assigned when initializing an Edge object, the weight is set to $0$. This is the minimal and highest ranked weight. An [example on weight hierarchy](../zone_A/Algorithm/Approach.MD#weighting-edges) is detailed on Zone A's main approach document. The weight is saved in the structure as:
+If a weight is not assigned when initializing an Edge object, the weight is set to $0$. This is the minimal and highest ranked weight. An [example on weight hierarchy](../zone_A/Approach.MD#weighting-edges) is detailed on Zone A's main approach document. The weight is saved in the structure as:
 
 ```cpp
 int weight;

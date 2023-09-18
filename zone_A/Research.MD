@@ -2,7 +2,7 @@
 
 ## Zone Summary
 
-Zone A is, in very little detail, simply a maze. To earn more points in this zone, one must traverse the entire maze with the objective of identifying the only color that repeats EXACTLY 5 times $(U)$. The size of the maze is always a zone of $3\cdot 5$, $+1$ counting the checkpoint exit square $(E)$. The starting squasre $(S)$ is always positioned in the second row, last column to the right. Additionally, there is a randomly positioned black square $(K)$ that should not be crossed.
+Zone A is, in very little detail, simply a maze. To earn more points in this zone, one must traverse the entire maze with the objective of identifying the only color that repeats EXACTLY 5 times $(U)$. The size of the maze is always a zone of $3\cdot 5$, $+1$ counting the checkpoint exit square $(E)$. The starting square $(S)$ is always positioned in the second row, last column to the right. Additionally, there is a randomly positioned black square $(K)$ that should not be crossed.
 
 Because of this, there are 13 randomly generated colored squares, as follows:
 
@@ -41,10 +41,10 @@ The problem lies in possible randomly placed floating walls throughout the maze 
 
 The entire system can be seen as a graph that may or may not have connections between its different vertices, depending on the presence of floating walls. Considering that these walls can exist, each vertex is connected to another always in an octagonal manner, so, by its location on the maze, all vertices will have a maximum of adjacent vertices possible.
 
-![zoneA_maze1](../../media/zoneA_maze1.jpg)
+![zoneA_maze1](../media/zoneA_maze1.jpg)
 Zone A example maze
 
-![Graph representation of maze](../../media/graph_zone_1.png)
+![Graph representation of maze](../media/graph_zone_1.png)
 Graph representation of maze with vertex names
 
 An algorithm is needed that explores all vertices, even if the exit square $(E)$ is encountered. This is because the color that occurs exactly 5 times $(U)$ must be determined before exiting the maze. Vertex $K$ should not be accessed, and therefore, there should be no edges to it.

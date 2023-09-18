@@ -1,5 +1,7 @@
 # Line Follower *TCRT5000*
+
 ## Description
+
 It is a device that emits infrared light towards a surface and detects the amount of light that returns to the sensor. It has an emitter (blue) and a detector (black). If the emitted IR rays return to the detector, it returns 1; if the emitted IR rays do not return to the detector, it returns 0. The light digital output threshold is adjusted with a screwdriver.
 
 ![TCRT5000 Module](https://http2.mlstatic.com/D_NQ_NP_2X_856153-MLM41695339939_052020-F.webp)
@@ -24,6 +26,7 @@ It occurs to me that you can also use 3 sensors and arrange them so that the cen
 ![Line Follower Cases](https://cdn.nerdyelectronics.com/wp-content/uploads/2020/08/line-follower-sensor-logic.png)
 
 ## Buy
+
 * Board $45 [Electronics for Students](http://semty.mx/index.php?id_product=2708&controller=product)
 * Sensor $18 [Electronics for Students](http://semty.mx/index.php?id_product=1715&controller=product)
 * Set of 5 boards $150 [Electronics for Students](http://semty.mx/index.php?id_product=2663&controller=product)

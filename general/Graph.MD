@@ -13,8 +13,8 @@ The basic variables and methods that should be stored to explore the graph are:
 
 * [Current vertex location](./Vertex.MD#naming-vertices)
 * Zone A graph exploration related structures
-  * [Stack](../zone_A/Algorithm/Research.MD#depth-first-search-dfs) (for DFS)
-  * [Max edges of vertices](../zone_A/Algorithm/Approach.MD#maximum-possible-edges)
+  * [Stack](../zone_A/Research.MD#depth-first-search-dfs) (for DFS)
+  * [Max edges of vertices](../zone_A/Approach.MD#maximum-possible-edges)
   * [Visited vertices](#visited-hashmap)
 
 In order to correctly store the multiple attributes of the data, as well as operations and methods that can be applied to it, the structures [Vertex](./Vertex.MD) and [Edge](./Edge.MD) are defined. Both structures encompass their own distinctive elements according to what distinguishes them.
@@ -39,8 +39,8 @@ To explore the entire graph, starting at vertex $S$ and ending at vertex $E$, re
 
 The key is any vertex $v$, and its value is a boolean value.
 
-- If $v$ has been visited, even if it has not been fully explored, the boolean value is set to $1$.
-- If $v$ has not been visited, even if an edge has been found to said vertex, the boolean value is set to $0$
+* If $v$ has been visited, even if it has not been fully explored, the boolean value is set to $1$.
+* If $v$ has not been visited, even if an edge has been found to said vertex, the boolean value is set to $0$
 
 At the start, only the vertex $S$ is set as visited, as it is the starting point from which any exploration algorithm starts. `visited` can be defined as
 
