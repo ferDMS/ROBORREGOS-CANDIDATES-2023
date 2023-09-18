@@ -4,7 +4,7 @@ The only basic element of a vertex is its name, which is used to distinguish it 
 
 ## Naming Vertices
 
-Vertices on a [[Graph]] are usually named consequently after the root vertex, or in an arbitrary way. In the case of a regular graph, these names could be simple integer values that keep increasing for each vertex that is discovered or explored. This makes sense on graph structures that have a set amount of vertices to explore. However, on graphs that are continuously expanding, the task of naming newly discovered vertices can be demanding, especially when they have edges that create loops with already known vertices.
+Vertices on a [Graph](Graph.MD) are usually named consequently after the root vertex, or in an arbitrary way. In the case of a regular graph, these names could be simple integer values that keep increasing for each vertex that is discovered or explored. This makes sense on graph structures that have a set amount of vertices to explore. However, on graphs that are continuously expanding, the task of naming newly discovered vertices can be demanding, especially when they have edges that create loops with already known vertices.
 
 Solving this naming problem is easy when considering the general structure of the competition map. All vertices, even ones that are being constantly discovered and explored, always have octagonal edges (connections of $90\degree$). Considering this, the graph structure can be represented as a plane in two dimensions (2D), with values for the $x$ and $y$ axis. This way, a vertex is named as a coordinate system of both values.
 
@@ -37,3 +37,5 @@ Obtaining the distance between a vertex $v$ and another reachable vertex can be 
 ```cpp
 unsigned int distance(Vertex v);
 ```
+
+## [Implementation](./Vertex.hpp)

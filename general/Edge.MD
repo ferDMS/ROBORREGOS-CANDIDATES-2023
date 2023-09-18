@@ -38,4 +38,4 @@ Edge reversed();
 Edge reversed(int weightIn);
 ```
 
-
+## [Implementation](./Edge.hpp)

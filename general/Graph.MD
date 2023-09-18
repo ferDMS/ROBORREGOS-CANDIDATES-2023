@@ -17,7 +17,7 @@ The basic variables and methods that should be stored to explore the graph are:
   * [Max edges of vertices](../zone_A/Algorithm/Approach.MD#maximum-possible-edges)
   * [Visited vertices](#visited-hashmap)
 
-In order to correctly store the multiple attributes of the data, as well as operations and methods that can be applied to it, the structures [[Vertex]] and [[Edge]] are defined. Both structures encompass their own distinctive elements according to what distinguishes them.
+In order to correctly store the multiple attributes of the data, as well as operations and methods that can be applied to it, the structures [Vertex](./Vertex.MD) and [Edge](./Edge.MD) are defined. Both structures encompass their own distinctive elements according to what distinguishes them.
 
 ## Number of vertices
 

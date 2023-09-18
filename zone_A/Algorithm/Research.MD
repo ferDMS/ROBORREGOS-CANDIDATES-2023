@@ -63,7 +63,7 @@ This pause can be implemented in two different ways:
 
 * Stack: This stack data structure is created, and vertices are added to and removed from it as vertices are found and explored. When a vertex is added to the stack, its exploration is paused, and when it is removed, it is resumed.
 
-## [[Approach]]
+## [Approach](./Approach.MD)
 
 ## References
 
