@@ -1,0 +1,39 @@
+# Vertex Structure
+
+The only basic element of a vertex is its name, which is used to distinguish it from other vertices.
+
+## Naming Vertices
+
+Vertices on a [[Graph]] are usually named consequently after the root vertex, or in an arbitrary way. In the case of a regular graph, these names could be simple integer values that keep increasing for each vertex that is discovered or explored. This makes sense on graph structures that have a set amount of vertices to explore. However, on graphs that are continuously expanding, the task of naming newly discovered vertices can be demanding, especially when they have edges that create loops with already known vertices.
+
+Solving this naming problem is easy when considering the general structure of the competition map. All vertices, even ones that are being constantly discovered and explored, always have octagonal edges (connections of $90\degree$). Considering this, the graph structure can be represented as a plane in two dimensions (2D), with values for the $x$ and $y$ axis. This way, a vertex is named as a coordinate system of both values.
+
+Now, as the graph is being explored, through these $x$ and $y$ values it is easy to identify if the robot is returning to a known vertex, according to its coordinate name and edge direction on these axis. The coordinate name can be defined as a relative position to the origin of the 2D plane, which is the point of coordinates $(0,0)$. This origin can effectively be the starting point from which a graph is explored, and thus, the name of the starting vertex $S$ will always be set to $x=0$, $y=0$, and the remaining vertices according to their relative positioning.
+
+## Saving names
+
+Two variables are saved to represent the name of a vertex, one for each axis on the 2D plane:
+
+```cpp
+int x;
+int y;
+```
+
+## Adjacent vertices
+
+Because the graph is octogonal, an arbitrary vertex $v$ could have up to 4 adjacent vertices. These vertices can be defined in terms of $v$ as lower or higher on the $x$ and $y$ axis, as follows:
+
+```cpp
+v.up();  // Vertex(v.x, v.y+1)
+v.down();  // Vertex(v.x, v.y-1)
+v.left();  // Vertex(v.x-1, v.y)
+v.right();  // Vertex(v.x+1, v.y)
+```
+
+## Distance between vertices
+
+Obtaining the distance between a vertex $v$ and another reachable vertex can be helpful. For example, to obtain at which depth level a vertex is located with respect to the origin vertex $S$. The returned value is only the magnitude of the distance, represented as a single unsigned integer.
+
+```cpp
+unsigned int distance(Vertex v);
+```

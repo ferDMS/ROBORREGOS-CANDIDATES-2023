@@ -6,21 +6,21 @@
 * Dimensions: 69 mm x 28 mm
 * Features five TCRT5000 infrared reflection sensors
 * Pins:
-    * VCC: 5V Pin
-    * GND: Ground Pin
-    * S1: Digital output of sensor 1
-    * S2: Digital output of sensor 2
-    * S3: Digital output of sensor 3
-    * S4: Digital output of sensor 4
-    * S5: Digital output of sensor 5
-    * CLP: Digital output of front switch
-    * NEAR: Digital output of front sensor
+  * VCC: 5V Pin
+  * GND: Ground Pin
+  * S1: Digital output of sensor 1
+  * S2: Digital output of sensor 2
+  * S3: Digital output of sensor 3
+  * S4: Digital output of sensor 4
+  * S5: Digital output of sensor 5
+  * CLP: Digital output of front switch
+  * NEAR: Digital output of front sensor
 
 ![TCRT5000 Module](../media/5xlinefollower.jpg)
 TCRT5000 Module
 
-
 ## Connections
+
 ![Arduino Nano Connections](../media/IMG_6502.JPG)
 Arduino Nano Connections
 
@@ -29,7 +29,6 @@ TCRT5000 Connections
 
 ![Test Circuit Model](../media/lf_test_circuit.png)
 Test Circuit Model
-
 
 ## Code
 
@@ -76,14 +75,11 @@ void loop() {
 }
 ```
 
-
 ## Testing
 
 <a href="https://youtube.com/shorts/zt0X3Zx6c1c"><img src="../media/LF_test_ss.jpg" alt="Testing TCRT5000 Module Video"></a>
 Testing TCRT5000 Module
 
-
 ## References
 
 [Module Description](https://www.tinytronics.nl/shop/en/sensors/optical/infrared/5x-tcrt5000-tracking-and-object-sensor-module)
-

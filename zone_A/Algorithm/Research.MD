@@ -1,6 +1,6 @@
-# Algorithm Zone A
+# Zone A Research
 
-## Summary
+## Zone Summary
 
 Zone A is, in very little detail, simply a maze. To earn more points in this zone, one must traverse the entire maze with the objective of identifying the only color that repeats EXACTLY 5 times $(U)$. The size of the maze is always a zone of $3\cdot 5$, $+1$ counting the checkpoint exit square $(E)$. The starting squasre $(S)$ is always positioned in the second row, last column to the right. Additionally, there is a randomly positioned black square $(K)$ that should not be crossed.
 
@@ -37,7 +37,7 @@ The problem lies in possible randomly placed floating walls throughout the maze 
 3. Does the initial square also change in position every round?
     * No, $S$ and $E$ never change positions
 
-## Algorithmic Approach: Graph
+## Approach: Graph
 
 The entire system can be seen as a graph that may or may not have connections between its different vertices, depending on the presence of floating walls. Considering that these walls can exist, each vertex is connected to another always in an octagonal manner, so, by its location on the maze, all vertices will have a maximum of adjacent vertices possible.
 
@@ -62,6 +62,8 @@ This pause can be implemented in two different ways:
     4. The function of exploring the parent vertex resumes.
 
 * Stack: This stack data structure is created, and vertices are added to and removed from it as vertices are found and explored. When a vertex is added to the stack, its exploration is paused, and when it is removed, it is resumed.
+
+## [[Approach]]
 
 ## References
 

@@ -15,7 +15,7 @@ struct Vertex {
     Vertex down();
     Vertex left();
     Vertex right();
-    int level(Vertex v);
+    unsigned int distance(Vertex v);
     // Operators
     bool operator==(Vertex v);
 };
@@ -47,7 +47,7 @@ Vertex Vertex::right() {
     return v;
 }
 
-int Vertex::level(Vertex v) {
+unsigned int Vertex::distance(Vertex v) {
     return abs(x - v.x + y - v.y);
 }
 

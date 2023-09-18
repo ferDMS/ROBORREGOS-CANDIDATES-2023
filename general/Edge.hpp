@@ -5,7 +5,7 @@
 
 struct Edge {
     // Variables
-    Vertex u; // Origin 
+    Vertex u; // Source 
     Vertex v; // Destination
     int weight;
     // Constructors
@@ -52,7 +52,7 @@ bool Edge::operator>(Edge e) {
     return weight > e.weight;
 }
 
-bool Edge::operator>(Edge e) {
+bool Edge::operator<(Edge e) {
     return weight < e.weight;
 }
 
