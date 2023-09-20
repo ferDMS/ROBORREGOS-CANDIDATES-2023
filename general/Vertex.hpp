@@ -2,14 +2,17 @@
 #define VERTEX
 
 #include <cmath>
+#include <string>
 
 struct Vertex {
     // Variables
     int x;
     int y;
+    std::string color;  // See documentation for colors table
     // Constructors
     Vertex();
     Vertex(int xIn, int yIn);
+    Vertex(int xIN, int yIn, std::string colorIn);
     // Methods
     Vertex up();
     Vertex down();
@@ -25,6 +28,12 @@ Vertex::Vertex() {}
 Vertex::Vertex(int xIn, int yIn) {
     x = xIn;
     y = yIn;
+}
+
+Vertex::Vertex(int xIn, int yIn, std::string colorIn) {
+    x = xIn;
+    y = yIn;
+    color = colorIn;
 }
 
 Vertex Vertex::up() {

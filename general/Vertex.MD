@@ -1,6 +1,6 @@
 # Vertex Structure
 
-The only basic element of a vertex is its name, which is used to distinguish it from other vertices.
+The only basic elements of a vertex are its name and its color. Its name is used to distinguish it from other vertices and the color for multiple tasks throughout the round.
 
 ## Naming Vertices
 
@@ -18,6 +18,14 @@ Two variables are saved to represent the name of a vertex, one for each axis on 
 int x;
 int y;
 ```
+
+## Saving colors
+
+A string variable `color` saves the name of the color according to the possible appearances in the different zones. The complete list of colors, with their corresponding color code values is defined below:
+
+| Color String |   R   |   G   |   B   |  HEX   |
+| :----------: | :---: | :---: | :---: | :----: |
+|    white     |  255  |  255  |  255  | #FFFFF |
 
 ## Adjacent vertices
 
