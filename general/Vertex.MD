@@ -46,4 +46,24 @@ Obtaining the distance between a vertex $v$ and another reachable vertex can be 
 unsigned int distance(Vertex v);
 ```
 
+## Hash function definition
+
+Since the [Graph](./Graph.MD) class uses hashmaps with Vertex objects as keys, the objects must be passed through a hashing function in order to convert them to a usable hash digest key. The [C++ standard library's hash structure](https://en.cppreference.com/w/cpp/utility/hash) requires that every hashed data type describes its precise attributes that should be used to construct the hash. Because vertices will never have the same `x` and `y` locations (unless if they are in different graph objects), these two variables are selected as the attributes to fulfill this purpose.
+
+A new specialization is defined for the std's hash structure `std::hash()` that can perform operations with the `<Vertex>` data type. 
+
+```cpp
+template<>
+struct std::hash<Vertex> {
+```
+
+This specialization will give C++ directions on how to approach the hashing process when applied to a custom created structure. Inside of the structure should be a function `operator() const` which performs the hashing process of the object in *read mode* (const part). Thus, inside of our own definition we equal the `Vertex` hash to be a combination of the object's `x` and `y` hashes
+
+```cpp
+std::size_t operator()(const Vertex& v) const {
+        return std::hash<int>()(v.x) ^ std::hash<int>()(v.y);
+    }
+};
+```
+
 ## [Implementation](./Vertex.hpp)

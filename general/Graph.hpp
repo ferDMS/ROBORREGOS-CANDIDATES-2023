@@ -13,7 +13,7 @@ class Graph {
         int n;
             // Adjacency map.
             // adj[v].size() is the # of edges found until now for vertex v
-        std::unordered_map<Vertex, std::vector<Edge>> adj;
+        std::unordered_map<Vertex, std::vector<Edge> > adj;
 
         // Graph exploration variables
             // Current vertex location of exploration
@@ -29,9 +29,9 @@ class Graph {
         // Constructors
         Graph();
         Graph(int nIn);
-        Graph(std::vector<Edge> vertices);
+        Graph(std::vector<Vertex> vertices);
         Graph(std::unordered_map<Vertex, int> max_edgesIn);
-        Graph(std::unordered_map<Vertex, std::vector<Edge>> adjIn);
+        Graph(std::unordered_map<Vertex, std::vector<Edge> > adjIn);
         // Getters
         int size();
         Vertex getPos();
@@ -46,8 +46,6 @@ class Graph {
         void addUndirEdge(Edge e);
         void addUndirEdge(Edge e, int weight);
         void setAsVisited(Vertex v);
-        // Other methods
-        void evalPath();
 };
 
 Graph::Graph() {
@@ -58,17 +56,17 @@ Graph::Graph(int nIn) {
     n = nIn;
     pos.x = 0;
     pos.y = 0;
-    adj[pos] = {};
+    adj[pos] = std::vector<Edge>();
     visited[pos] = 0;
 }
 
-Graph::Graph(std::vector<Edge> vertices) {
+Graph::Graph(std::vector<Vertex> vertices) {
     n = vertices.size();
     pos.x = 0;
     pos.y = 0;
     for (int i = 0; i < n; i++) {
-        adj[vertices[i].u] = {};
-        visited[vertices[i].u] = 0;
+        adj[vertices[i]] = std::vector<Edge>();
+        visited[vertices[i]] = 0;
     }
 }
 
@@ -77,19 +75,19 @@ Graph::Graph(std::unordered_map<Vertex, int> max_edgesIn) {
     pos.x = 0;
     pos.y = 0;
     max_edges = max_edgesIn;
-    for (auto& it : max_edges) {
-        adj[it.first] = {};
-        visited[it.first] = 0;
+    for (std::unordered_map<Vertex, int>::iterator it = max_edges.begin(); it != max_edges.end(); it++) {
+        adj[it->first] = std::vector<Edge>();
+        visited[it->first] = 0;
     }
 }
 
-Graph::Graph(std::unordered_map<Vertex, std::vector<Edge>> adjIn) {
+Graph::Graph(std::unordered_map<Vertex, std::vector<Edge> > adjIn) {
     n = adjIn.size();
     pos.x = 0;
     pos.y = 0;
     adj = adjIn;
-    for (auto& it : adj) {
-        visited[it.first] = 0;
+    for (std::unordered_map<Vertex, std::vector<Edge> >::iterator it = adjIn.begin(); it != adjIn.end(); it++) {
+        visited[it->first] = 0;
     }
 }
 
@@ -102,15 +100,27 @@ Vertex Graph::getPos() {
 }
 
 std::vector<Edge> Graph::getEdges(Vertex v) {
-    return adj[v];
+    try {
+        return adj[v];
+    } catch (const std::out_of_range &e) {
+        return std::vector<Edge>();
+    }
 }
 
 int Graph::getMaxEdges(Vertex v) {
-    return max_edges[v];
+    try {
+        return max_edges[v];
+    } catch (const std::out_of_range &e) {
+        return -1;
+    }
 }
 
 bool Graph::getVisitedStatus(Vertex v) {
-    return visited[v];
+    try {
+        return visited[v];
+    } catch (const std::out_of_range &e) {
+        return -1;
+    }
 }
 
 void Graph::setPos(Vertex posIn) {
@@ -122,8 +132,9 @@ void Graph::setMaxEdges(Vertex v, int n_edges) {
 }
 
 void Graph::addVertex(Vertex v) {
-    adj[v] = {};
+    adj[v] = std::vector<Edge>();
     visited[v] = 0;
+    max_edges[v] = -1;
     n++;
 }
 
@@ -143,33 +154,6 @@ void Graph::addUndirEdge(Edge e, int weight) {
 
 void Graph::setAsVisited(Vertex v) {
     visited[v] = 1;
-}
-
-void Graph::evalPath() {
-    /*
-    Quick pseudocode for DFS path generation
-
-    while (!stack.empty()) {
-        bool up = detectPathUp()
-        bool right = detectPathRight()
-        bool down = detectPathDown()
-        bool left = detectPathLeft()
-
-        if (right) {
-            stack.push(pos)
-            addUndirEdge(pos, pos+1)
-            pos++
-            goRight()
-            
-        } else if (down) {
-        ""
-        } else if (up) {
-            ""
-        } else if (left) {
-            ""
-        }
-    
-    */
 }
 
 #endif

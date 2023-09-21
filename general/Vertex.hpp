@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <string>
+#include <functional>
 
 struct Vertex {
     // Variables
@@ -20,14 +21,26 @@ struct Vertex {
     Vertex right();
     unsigned int distance(Vertex v);
     // Operators
-    bool operator==(Vertex v);
+    bool operator==(const Vertex& v) const;
 };
 
-Vertex::Vertex() {}
+template<>
+struct std::hash<Vertex> {
+    std::size_t operator()(const Vertex& v) const {
+        return std::hash<int>()(v.x) ^ std::hash<int>()(v.y);
+    }
+};
+
+Vertex::Vertex() {
+    x = -1;
+    y = -1;
+    color = "";
+}
 
 Vertex::Vertex(int xIn, int yIn) {
     x = xIn;
     y = yIn;
+    color = "";
 }
 
 Vertex::Vertex(int xIn, int yIn, std::string colorIn) {
@@ -60,8 +73,8 @@ unsigned int Vertex::distance(Vertex v) {
     return abs(x - v.x + y - v.y);
 }
 
-bool Vertex::operator==(Vertex v) {
+bool Vertex::operator==(const Vertex& v) const {
     return (x == v.x && y == v.y);
 }
 
-#endif VERTEX
+#endif

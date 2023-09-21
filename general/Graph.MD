@@ -30,7 +30,7 @@ The adjacency hashmap `adj` is saved as an unordered map, a structure on C++ tha
 The key is any vertex $v$, and its value is a vector of $v$'s edges. Using the previously mentioned structures, `adj` can be defined as
 
 ```cpp
-std::unordered_map<Vertex, std::vector<Edge>> adj;
+std::unordered_map<Vertex, std::vector<Edge> > adj;
 ```
 
 ## Visited hashmap

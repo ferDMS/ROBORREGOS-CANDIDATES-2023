@@ -56,4 +56,4 @@ bool Edge::operator<(Edge e) {
     return weight < e.weight;
 }
 
-#endif EDGE
+#endif
