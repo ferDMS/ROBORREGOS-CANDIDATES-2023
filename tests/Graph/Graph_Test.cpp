@@ -45,8 +45,8 @@ int main() {
     // std::cout << "g[0]'s color is " << g.get(Vertex())->color << std::endl;
     
     // Test default constructor of Vertex and get() method
-    Vertex v = g.get(Vertex(1,1));
-    std::cout << "g[0]'s color is " << v.color << std::endl;
+    Vertex* v = g.get(Vertex(1,1));
+    std::cout << "g[0]'s color is " << v->color << std::endl;
     
     return 0;
 }

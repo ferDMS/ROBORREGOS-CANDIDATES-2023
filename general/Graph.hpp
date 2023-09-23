@@ -19,8 +19,8 @@ struct Graph
     Graph(std::vector<Vertex> verticesIn);
 
     // Methods
-    Vertex& get(Vertex v);
-    Vertex& add(Vertex v);
+    Vertex* get(Vertex v);
+    Vertex* add(Vertex v);
 
     // Operators
     Vertex &operator[](int index);
@@ -50,22 +50,22 @@ Graph::Graph(std::vector<Vertex> verticesIn)
 }
 
 // Get pointer to vertex object from its coordinates
-Vertex& Graph::get(Vertex v)
+Vertex* Graph::get(Vertex v)
 {
     for (int i = 0; i < n; i++) {
         if (v == vertices[i]) {
-            return vertices[i];
+            return &vertices[i];
         }
     }
     std::cout << "Vertex not found" << std::endl;
-    return pos;
+    return nullptr;
 }
 
 // Add vertex (returns pointer to created object)
-Vertex& Graph::add(Vertex v) {
+Vertex* Graph::add(Vertex v) {
     vertices.push_back(v);
     n++;
-    return vertices[n-1];
+    return &vertices[n-1];
 }
 
 // Overload the [] operator to access vertices by index

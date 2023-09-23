@@ -5,26 +5,34 @@
 
 void zoneA(Graph& g) 
 {    
-    std::stack<Vertex> stack;
-    stack.push(g[0]);
-    Vertex v;
-    int counter = 0;
+    std::stack<Vertex*> stack;
+    stack.push(&g[1]);
+    Vertex* v;
+    int counter = 1;
 
     while (!stack.empty())
     {
         v = stack.top();
         stack.pop();
 
-        if (!v.visited)
+        if (!v->visited)
         {
-            std::cout << counter << ". " << v.coords() << std::endl;
-            v.visited = true;
+            std::cout << counter << ". " << v->coords() << std::endl;
+            v->visited = true;
         }
+
+        for (int i = 0; i < v->adj.size(); i++) {
+            if (!v->adj[i]->visited) {
+                stack.push(v->adj[i]);
+            }
+        }
+
+        counter++;
     }
 }
 
 void zoneAEdgeInit(Graph& g, std::string& adj_string) {
-    Vertex v;
+    Vertex* vptr;
     int i = 0;
     int j = 1;
     std::stringstream ss(adj_string);
@@ -32,14 +40,12 @@ void zoneAEdgeInit(Graph& g, std::string& adj_string) {
 
     while (std::getline(ss, word, ',')) {
         // Define the new vertex to which assign edges
-        v = g.get(Vertex(i,j));
-        std::cout << "i=" << i << ", j=" << j << std::endl;
-        std::cout << &v << std::endl;
-        // Assign the edges specified on the string
-        if (word.find('l') != std::string::npos) { v.adj.push_back(  &g.get( v.left()  )  ); }
-        if (word.find('r') != std::string::npos) { v.adj.push_back(  &g.get( v.right() )  ); }
-        if (word.find('u') != std::string::npos) { v.adj.push_back(  &g.get( v.up()    )  ); }
-        if (word.find('d') != std::string::npos) { v.adj.push_back(  &g.get( v.down()  )  ); }
+        vptr = g.get(Vertex(i,j));
+        // Assign the edges specified on the string IN THE REVERSED ORDER OF "WEIGHT" (right, down, up, left) since a stack is LIFO
+        if (word.find('l') != std::string::npos) { vptr->adj.push_back(  g.get( vptr->left()  )  ); }
+        if (word.find('u') != std::string::npos) { vptr->adj.push_back(  g.get( vptr->up()    )  ); }
+        if (word.find('d') != std::string::npos) { vptr->adj.push_back(  g.get( vptr->down()  )  ); }
+        if (word.find('r') != std::string::npos) { vptr->adj.push_back(  g.get( vptr->right() )  ); }
         // Go to the next row
         j--;
         // If we passed the last row, go to the next column and restart row to the top
@@ -47,13 +53,6 @@ void zoneAEdgeInit(Graph& g, std::string& adj_string) {
             j = 1;
             i--;
         }
-
-        std::cout << "Vertex " << v.coords() << ":\t";
-        for (int j = 0; j < v.adj.size(); j++)
-        {
-            std::cout << &v.adj[j] << "\t";
-        }
-        std::cout << "\n";
     }
 }
 
@@ -84,19 +83,24 @@ int main()
     // Define edges between vertices as a formatted string
     // The order of vertices matches the order above, and their coordinates
     // l = left, d = down, u = up, r = right
-    std::string adj_string = "ld,ud,lu,ldr,uld,ur,lr,lr,l,rd,lurd,ulr,d,ru,r,r";
+    std::string adj_string = "ld  ,ud  ,lu  ,ldr ,uld ,ur  ,lr  ,lr  ,l   ,rd  ,lurd,ulr ,d   ,ru  ,r   ,r   ";
+    //       Vertex #          0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
+
     zoneAEdgeInit(g, adj_string);
 
     // Display edges of all vertices
     for (int i = 0; i < g.n; i++)
     {
-        std::cout << "Vertex " << g[i].coords() << ":\t";
+        std::cout << "Vertex " << g[i].coords() << ": ";
         for (int j = 0; j < g[i].adj.size(); j++)
         {
-            std::cout << &g[i].adj[j] << "\t";
+            std::cout << g[i].adj[j]->coords() << " ";
         }
         std::cout << "\n";
     }
+
+    // Perform algorithm
+    zoneA(g);
     
 
     return 0;
