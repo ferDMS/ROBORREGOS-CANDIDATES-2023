@@ -3,157 +3,72 @@
 
 #include <vector>
 #include <stack>
-#include <unordered_map>
-#include "Edge.hpp" // Also includes "Vertex.hpp"
+#include "Vertex.hpp"
 
-class Graph {
-    private:
-        // Basic variables
-            // Number of vertices
-        int n;
-            // Adjacency map.
-            // adj[v].size() is the # of edges found until now for vertex v
-        std::unordered_map<Vertex, std::vector<Edge> > adj;
+// Struct to comprise Vertex objects and define graph traversal methods
+struct Graph
+{
+    // Variables with default values
+    int n;                        // Number of vertices
+    Vertex pos;                   // Current position, at the start it is always x=0, y=0
+    std::vector<Vertex> vertices; // List of vertices in the graph
 
-        // Graph exploration variables
-            // Current vertex location of exploration
-        Vertex pos;
-            // Stack of vertices paused
-        std::stack<Vertex> stack;
-            // Map of visited vertices
-        std::unordered_map<Vertex, bool> visited;
-            // Map of maximum possible edges for each vertex in adj
-        std::unordered_map<Vertex, int> max_edges;
+    // Constructors
+    Graph();
+    Graph(int nIn);
+    Graph(std::vector<Vertex> verticesIn);
 
-    public:
-        // Constructors
-        Graph();
-        Graph(int nIn);
-        Graph(std::vector<Vertex> vertices);
-        Graph(std::unordered_map<Vertex, int> max_edgesIn);
-        Graph(std::unordered_map<Vertex, std::vector<Edge> > adjIn);
-        // Getters
-        int size();
-        Vertex getPos();
-        std::vector<Edge> getEdges(Vertex v);
-        int getMaxEdges(Vertex v);
-        bool getVisitedStatus(Vertex v);
-        // Setters
-        void setPos(Vertex posIn);
-        void setMaxEdges(Vertex v, int n_edges);
-        void addVertex(Vertex v);
-        void addDirEdge(Edge e);
-        void addUndirEdge(Edge e);
-        void addUndirEdge(Edge e, int weight);
-        void setAsVisited(Vertex v);
+    // Methods
+    Vertex& get(Vertex v);
+    Vertex& add(Vertex v);
+
+    // Operators
+    Vertex &operator[](int index);
 };
 
-Graph::Graph() {
+// Default constructor for an empty graph
+Graph::Graph()
+{
     n = 0;
+    pos = Vertex(0, 0);
 }
 
-Graph::Graph(int nIn) {
+// Constructor for a graph of n vertices
+Graph::Graph(int nIn)
+{
     n = nIn;
-    pos.x = 0;
-    pos.y = 0;
-    adj[pos] = std::vector<Edge>();
-    visited[pos] = 0;
+    pos = Vertex(0, 0);
+    vertices = std::vector<Vertex>(n, Vertex());
 }
 
-Graph::Graph(std::vector<Vertex> vertices) {
+// Constructor for a graph of already initialized vertices
+Graph::Graph(std::vector<Vertex> verticesIn)
+{
     n = vertices.size();
-    pos.x = 0;
-    pos.y = 0;
+    pos = Vertex(0, 0);
+    vertices = verticesIn;
+}
+
+// Get pointer to vertex object from its coordinates
+Vertex& Graph::get(Vertex v)
+{
     for (int i = 0; i < n; i++) {
-        adj[vertices[i]] = std::vector<Edge>();
-        visited[vertices[i]] = 0;
+        if (v == vertices[i]) {
+            return vertices[i];
+        }
     }
-}
-
-Graph::Graph(std::unordered_map<Vertex, int> max_edgesIn) {
-    n = max_edgesIn.size();
-    pos.x = 0;
-    pos.y = 0;
-    max_edges = max_edgesIn;
-    for (std::unordered_map<Vertex, int>::iterator it = max_edges.begin(); it != max_edges.end(); it++) {
-        adj[it->first] = std::vector<Edge>();
-        visited[it->first] = 0;
-    }
-}
-
-Graph::Graph(std::unordered_map<Vertex, std::vector<Edge> > adjIn) {
-    n = adjIn.size();
-    pos.x = 0;
-    pos.y = 0;
-    adj = adjIn;
-    for (std::unordered_map<Vertex, std::vector<Edge> >::iterator it = adjIn.begin(); it != adjIn.end(); it++) {
-        visited[it->first] = 0;
-    }
-}
-
-int Graph::size() {
-    return n;
-}
-
-Vertex Graph::getPos() {
+    std::cout << "Vertex not found" << std::endl;
     return pos;
 }
 
-std::vector<Edge> Graph::getEdges(Vertex v) {
-    try {
-        return adj[v];
-    } catch (const std::out_of_range &e) {
-        return std::vector<Edge>();
-    }
-}
-
-int Graph::getMaxEdges(Vertex v) {
-    try {
-        return max_edges[v];
-    } catch (const std::out_of_range &e) {
-        return -1;
-    }
-}
-
-bool Graph::getVisitedStatus(Vertex v) {
-    try {
-        return visited[v];
-    } catch (const std::out_of_range &e) {
-        return -1;
-    }
-}
-
-void Graph::setPos(Vertex posIn) {
-    pos = posIn;
-}
-
-void Graph::setMaxEdges(Vertex v, int n_edges) {
-    max_edges[v] = n_edges;
-}
-
-void Graph::addVertex(Vertex v) {
-    adj[v] = std::vector<Edge>();
-    visited[v] = 0;
-    max_edges[v] = -1;
+// Add vertex (returns pointer to created object)
+Vertex& Graph::add(Vertex v) {
+    vertices.push_back(v);
     n++;
+    return vertices[n-1];
 }
 
-void Graph::addDirEdge(Edge e) {
-    adj[e.u].push_back(e);
-}
-
-void Graph::addUndirEdge(Edge e) {
-    addDirEdge(e);
-    addDirEdge(e.reversed());
-}
-
-void Graph::addUndirEdge(Edge e, int weight) {
-    addDirEdge(e);
-    addDirEdge(e.reversed(weight));
-}
-
-void Graph::setAsVisited(Vertex v) {
-    visited[v] = 1;
-}
+// Overload the [] operator to access vertices by index
+Vertex& Graph::operator[](int index) { return vertices[index]; }
 
 #endif

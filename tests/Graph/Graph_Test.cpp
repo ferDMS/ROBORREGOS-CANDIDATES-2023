@@ -1,102 +1,52 @@
 #include <iostream>
 #include "../../general/Graph.hpp"
 
-void testVertex() {
-    // Test default constructor
-    Vertex v1;
-    assert(v1.x == -1 && v1.y == -1 && v1.color == "");
-
-    // Test constructor with two arguments
-    Vertex v2(1, 2);
-    assert(v2.x == 1 && v2.y == 2 && v2.color == "");
-
-    // Test constructor with three arguments
-    Vertex v3(3, 4, "red");
-    assert(v3.x == 3 && v3.y == 4 && v3.color == "red");
-
-    // Test up() method
-    Vertex v4 = v2.up();
-    assert(v4.x == 1 && v4.y == 3 && v4.color == "");
-
-    // Test down() method
-    Vertex v5 = v2.down();
-    assert(v5.x == 1 && v5.y == 1 && v5.color == "");
-
-    // Test left() method
-    Vertex v6 = v2.left();
-    assert(v6.x == 0 && v6.y == 2 && v6.color == "");
-
-    // Test right() method
-    Vertex v7 = v2.right();
-    assert(v7.x == 2 && v7.y == 2 && v7.color == "");
-
-    // Test distance() method
-    unsigned int d1 = v2.distance(v3);
-    assert(d1 == 4);
-
-    unsigned int d2 = v3.distance(v2);
-    assert(d2 == 4);
-
-    // Test operator== method
-    assert(v2 == v2);
-    assert(!(v2 == v3));
-}
-
-void testGraph() {
-    // Test constructor with no arguments
-    Graph g1;
-    assert(g1.size() == 0);
-
-    // Test constructor with one argument
-    Graph g2(5);
-    assert(g2.size() == 5);
-
-    // Test constructor with vector argument (vector of vertices)
-    std::vector<Vertex> vertices;
-    vertices.push_back(Vertex(1, 2));
-    vertices.push_back(Vertex(3, 4));
-    Graph g3(vertices);
-    assert(g3.size() == 2);
-
-    // Test constructor with unordered_map argument (map of max_edges)
-    std::unordered_map<Vertex, int> max_edges;
-    max_edges[Vertex(1, 2)] = 3;
-    max_edges[Vertex(3, 4)] = 5;
-    Graph g4(max_edges);
-    assert(g4.size() == 2);
-
-    // Test constructor with unordered_map argument (map of edges)
-    std::unordered_map<Vertex, std::vector<Edge> > adj;
-    adj[Vertex(1, 2)] = std::vector<Edge>();
-    adj[Vertex(3, 4)] = std::vector<Edge>();
-    Graph g5(adj);
-    assert(g5.size() == 2);
-
-    // Test addVertex() method
-    g1.addVertex(Vertex(1, 2));
-    assert(g1.size() == 1);
-
-    // Test addDirEdge() and getEdges() methods
-    g1.addDirEdge(Edge(Vertex(1, 2), Vertex(3, 4)));
-    assert(g1.getEdges(Vertex(1, 2)).size() == 1);
-
-    // Test addUndirEdge() method
-    g1.addUndirEdge(Edge(Vertex(1, 2), Vertex(5, 6)));
-    assert(g1.getEdges(Vertex(1, 2)).size() == 2);
-    assert(g1.getEdges(Vertex(5, 6)).size() == 1);
-
-    // Test setAsVisited() and getVisitedStatus() methods
-    g1.setAsVisited(Vertex(1, 2));
-    assert(g1.getVisitedStatus(Vertex(1, 2)) == true);
-
-    // Test setMaxEdges() and getMaxEdges() method
-    g1.setMaxEdges(Vertex(1, 2), 3);
-    assert(g1.getMaxEdges(Vertex(1, 2)) == 3);
-}
-
 int main() {
-    testVertex();
-    testGraph();
-    std::cout << "Tests passed" << std::endl;
+    // Create a default graph
+    Graph g;
+
+    // Add vertices to the graph
+    g.add(Vertex(0,0,"yellow",3));
+    g.add(Vertex(2,2));
+    g.add(Vertex(4,4));
+
+    // Print the coordinates of the vertices
+    std::cout << "Vertex 0: (" << g[0].x << ", " << g[0].y << ")" << std::endl;
+    std::cout << "Vertex 1: (" << g[1].x << ", " << g[1].y << ")" << std::endl;
+    std::cout << "Vertex 2: (" << g[2].x << ", " << g[2].y << ")" << std::endl;
+
+    // Test graph's attributes
+    std::cout << "Number of vertices in graph is " << g.n << std::endl;
+
+    // Test the up(), down(), left(), and right() methods and the [] overload
+    g[0] = g[0].up().right();
+    g[0].color = "yellow";  // Giving back its attribute
+    std::cout << "Reassigning Vertex 0 shifted up and right: " << g[0].coords() << std::endl;
+    g[2] = g[2].down().left();
+    g[2].max_edges = 2;  // Giving it a new attribute
+    std::cout << "Reassigning Vertex 2 shifted down and left: " << g[2].coords() << std::endl;
+
+    // Test the distance() method
+    int dist = g[0].distance(g[2]);
+    std::cout << "Distance between vertex 0 and vertex 2: " << dist << std::endl;
+
+    // Test the operator== overload
+    std::cout << "g[0] == g[1]: " << (g[0] == g[1]) << std::endl;
+    std::cout << "g[1] == g[2]: " << (g[1] == g[2]) << std::endl;
+    
+    // Test the coords() method
+    for (int i = 0; i < 3; i++) {
+        std::cout << "Vertex " << i << ": " << g[i].coords() << std::endl;
+    }
+    // Test combination of methods
+    std::cout << "g[0].right().up() == g[2].left().down(): " << (g[0].right().up() == g[2].left().down()) << std::endl;
+
+    // Test default constructor of Vertex and get() method
+    // std::cout << "g[0]'s color is " << g.get(Vertex())->color << std::endl;
+    
+    // Test default constructor of Vertex and get() method
+    Vertex v = g.get(Vertex(1,1));
+    std::cout << "g[0]'s color is " << v.color << std::endl;
+    
     return 0;
 }

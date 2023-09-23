@@ -3,78 +3,62 @@
 
 #include <cmath>
 #include <string>
-#include <functional>
 
-struct Vertex {
+struct Vertex
+{
     // Variables
     int x;
     int y;
-    std::string color;  // See documentation for colors table
+
+    // Variables with default values
+    std::string color;         // Square color
+    std::vector<Vertex *> adj; // List of pointers that point to connected vertices
+    bool visited;              // Has the vertex been visited?
+    int max_edges;             // Maximum possible edges to other vertices, -1 = no limit
+
     // Constructors
     Vertex();
     Vertex(int xIn, int yIn);
-    Vertex(int xIN, int yIn, std::string colorIn);
+    Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn);
+
     // Methods
     Vertex up();
     Vertex down();
     Vertex left();
     Vertex right();
-    unsigned int distance(Vertex v);
+    int distance(Vertex v);
+    std::string coords();
+
     // Operators
-    bool operator==(const Vertex& v) const;
+    bool operator==(const Vertex &v) const;
 };
 
-template<>
-struct std::hash<Vertex> {
-    std::size_t operator()(const Vertex& v) const {
-        return std::hash<int>()(v.x) ^ std::hash<int>()(v.y);
-    }
-};
+// Default constructor
+Vertex::Vertex() : x(0), y(0), color("white"), visited(false), max_edges(-1) {}
 
-Vertex::Vertex() {
-    x = -1;
-    y = -1;
-    color = "";
+// Constructor specifying only the coordinates of the vertex
+Vertex::Vertex(int xIn, int yIn) : x(xIn), y(yIn), color("white"), visited(false), max_edges(-1) {}
+
+// Constructor specifying coordinates and color of the vertex
+Vertex::Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn) : x(xIn), y(yIn), color(colorIn), visited(false), max_edges(max_edgesIn) {}
+
+// The up(), down(), left(), and right() methods return the same Vertex object but shifted in that direction
+Vertex Vertex::up() { return Vertex(x, y + 1); }
+Vertex Vertex::down() { return Vertex(x, y - 1); }
+Vertex Vertex::left() { return Vertex(x - 1, y); }
+Vertex Vertex::right() { return Vertex(x + 1, y); }
+
+// Amount of edges needed to get to a discoverable Vertex v
+int Vertex::distance(Vertex v) { return abs(x - v.x + y - v.y); }
+
+// Return the formatted coordinates
+std::string Vertex::coords()
+{
+    std::string coordinates = "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+    return coordinates;
 }
 
-Vertex::Vertex(int xIn, int yIn) {
-    x = xIn;
-    y = yIn;
-    color = "";
-}
-
-Vertex::Vertex(int xIn, int yIn, std::string colorIn) {
-    x = xIn;
-    y = yIn;
-    color = colorIn;
-}
-
-Vertex Vertex::up() {
-    Vertex v(x, y+1);
-    return v;
-}
-
-Vertex Vertex::down() {
-    Vertex v(x, y-1);
-    return v;
-}
-
-Vertex Vertex::left() {
-    Vertex v(x-1, y);
-    return v;
-}
-
-Vertex Vertex::right() {
-    Vertex v(x+1, y);
-    return v;
-}
-
-unsigned int Vertex::distance(Vertex v) {
-    return abs(x - v.x + y - v.y);
-}
-
-bool Vertex::operator==(const Vertex& v) const {
-    return (x == v.x && y == v.y);
-}
+// Two vertices are the same if their coordinates are the same, which is their "naming convention"
+bool Vertex::operator==(const Vertex &v) const { return (x == v.x && y == v.y); }
 
 #endif
