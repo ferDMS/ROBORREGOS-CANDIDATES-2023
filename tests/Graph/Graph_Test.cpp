@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../../general/Graph.hpp"
+#include "../../general/Graph.h"
 
 int main() {
     // Create a default graph
