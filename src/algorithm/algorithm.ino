@@ -7,15 +7,16 @@ Robot r;
 void setup() {
     // Initialize Serial monitor connection
     Serial.begin(9600);
-    
 
     // Initialize zone A graph with test values
     Graph g = zoneAGraphInit();
+
     // Perform test for Zone A
     testZoneA(g);
 }
 
 void loop() {
+    delay(1000);
     // put your main code here, to run repeatedly:
 
     if (r.color == "yellow") {
@@ -27,7 +28,7 @@ void loop() {
     } else if (r.color == "purple") {
         // zoneC(r);
     } else {
-        // Serial.print("Color not identified");
-        std::cout << "Color not identified" << std::endl;
+        Serial.print("Color not identified");
+        // std::cout << "Color not identified" << std::endl;
     }
 }

@@ -23,7 +23,7 @@ struct Robot {
     // Sensor and Components read and write methods
     double getDistance(std::string direction);
     std::string getColor();
-    void turn(int angle);
+    void face(int angle);
     void move(double distance);
 
     // Special movement methods
@@ -32,7 +32,7 @@ struct Robot {
     void smartMove(double distance);
 
     // Other methods
-    void getDistances();
+    void getAllDistances();
 };
 
 Robot::Robot() {
@@ -43,11 +43,11 @@ Robot::Robot() {
 
 double Robot::getDistance(std::string direction) {}
 std::string Robot::getColor() {}
-void Robot::turn(int angle) {}
+void Robot::face(int angle) {}
 void Robot::move(double distance) {}
 void Robot::smartMove(double distance) {}
 
-void Robot::getDistances() {
+void Robot::getAllDistances() {
     if (facing == 180) {
         down_d = getDistance("left");
         left_d = getDistance("front");

@@ -15,12 +15,11 @@ struct Vertex
     // Variables with default values
     std::string color; // Square color
     bool visited;      // Has the vertex been visited?
-    int max_edges;     // Maximum possible edges to other vertices, -1 = no limit
+    int max_edges;     // Number of edges taken
 
     // Variables always initialized with default values
-
     // Map of 4 pointers that point to connected vertices on all directions
-    std::map<std::string, Vertex *> adj;
+    std::map<int, Vertex *> adj;
 
     // Constructors
     Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn);
@@ -34,6 +33,7 @@ struct Vertex
     Vertex left();
     Vertex right();
     int dir(Vertex v);
+    void addEdge(Vertex *v, int direction);
 
     int distance(Vertex v);
     String coords();
@@ -43,14 +43,7 @@ struct Vertex
 };
 
 // Constructor specifying coordinates, color, and max_edges of the vertex
-Vertex::Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn) : x(xIn), y(yIn), color(colorIn), max_edges(max_edgesIn)
-{
-    visited = false;
-    adj["right"] = nullptr;
-    adj["down"] = nullptr;
-    adj["up"] = nullptr;
-    adj["left"] = nullptr;
-}
+Vertex::Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn) : x(xIn), y(yIn), color(colorIn), max_edges(max_edgesIn), visited(false) {}
 
 // Constructor specifying only the coordinates and max_edges of the vertex, uses the constructor above
 Vertex::Vertex(int xIn, int yIn, int max_edgesIn) : Vertex(xIn, yIn, "", max_edgesIn) {}
@@ -69,12 +62,33 @@ Vertex Vertex::right() { return Vertex(x + 1, y); }
 
 // Specify an adjacent vector and return the direction to which it is found
 int Vertex::dir(Vertex v)
-{  
-    if (left() == v) { return 180; }
-    else if (up() == v) { return 90; }
-    else if (right() == v) { return 0; }
-    else if (down() == v) { return 270; }
-    else { return 1; }
+{
+    if (left() == v)
+    {
+        return 180;
+    }
+    else if (up() == v)
+    {
+        return 90;
+    }
+    else if (right() == v)
+    {
+        return 0;
+    }
+    else if (down() == v)
+    {
+        return 270;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+// Add an undirected edge between the object and a Vertex v
+void Vertex::addEdge(Vertex *v, int direction) {
+    adj[direction] = v;
+    v->adj[(direction + 180) % 360] = this;
 }
 
 // Amount of edges needed to get to a discoverable Vertex v

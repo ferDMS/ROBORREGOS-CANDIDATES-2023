@@ -26,10 +26,10 @@ void testZoneA(Graph &g)
         // If it is the first time we visit the vertex then it is marked as visited
         if (!v->visited)
         {
-            // Serial.print(counter);
-            // Serial.print(". ");
-            // Serial.println(v->coords());
-            std::cout << counter << ". " << v->coords() << std::endl;
+            Serial.print(counter);
+            Serial.print(". ");
+            Serial.println(v->coords());
+            //std::cout << counter << ". " << v->coords() << std::endl;
             v->visited = true;
         }
 
@@ -37,24 +37,24 @@ void testZoneA(Graph &g)
         // The order to add to the stack should be the reverse of the order we want to follow,
         // because a stack's order is LIFO. This means that the order to add the adjacent vertices should be
         // left -> up -> down -> right.
-        if (v->adj["left"] && !v->adj["left"]->visited)
+        if (v->adj.count(180) != 0 && !v->adj[180]->visited)
         {
-            stack.push(v->adj["left"]);
+            stack.push(v->adj[180]);
         }
 
-        if (v->adj["up"] && !v->adj["up"]->visited)
+        if (v->adj.count(90) != 0 && !v->adj[90]->visited)
         {
-            stack.push(v->adj["up"]);
+            stack.push(v->adj[90]);
         }
 
-        if (v->adj["down"] && !v->adj["down"]->visited)
+        if (v->adj.count(270) != 0 && !v->adj[270]->visited)
         {
-            stack.push(v->adj["down"]);
+            stack.push(v->adj[270]);
         }
 
-        if (v->adj["right"] && !v->adj["right"]->visited)
+        if (v->adj.count(0) != 0 && !v->adj[0]->visited)
         {
-            stack.push(v->adj["right"]);
+            stack.push(v->adj[0]);
         }
 
         counter++;
@@ -76,19 +76,19 @@ void zoneAEdgeInit(Graph &g, std::string &adj_string)
         // Assign the edges specified on the string
         if (word.find('l') != std::string::npos)
         {
-            vptr->adj["left"] = g.get(vptr->left());
+            vptr->adj[180] = g.get(vptr->left());
         }
         if (word.find('u') != std::string::npos)
         {
-            vptr->adj["up"] = g.get(vptr->up());
+            vptr->adj[90] = g.get(vptr->up());
         }
         if (word.find('d') != std::string::npos)
         {
-            vptr->adj["down"] = g.get(vptr->down());
+            vptr->adj[270] = g.get(vptr->down());
         }
         if (word.find('r') != std::string::npos)
         {
-            vptr->adj["right"] = g.get(vptr->right());
+            vptr->adj[0] = g.get(vptr->right());
         }
         // Go to the next row
         j--;
@@ -136,22 +136,23 @@ Graph &zoneAGraphInit()
     // Display edges of all vertices
     for (int i = 0; i < g.n; i++)
     {
-        // Serial.print("Vertex ");
-        // Serial.print(g[i].coords());
-        // Serial.print(": ");
-        std::cout << "Vertex " << g[i].coords() << ": ";
+        Serial.print("Vertex ");
+        Serial.print(g[i].coords());
+        Serial.print(": ");
+        // std::cout << "Vertex " << g[i].coords() << ": ";
 
-        // For every direction specified on the
-        for (std::map<std::string, Vertex *>::iterator it = g[i].adj.begin(); it != g[i].adj.end(); ++it)
+        // For every edge found for vertex i
+        for (std::map<int, Vertex *>::iterator it = g[i].adj.begin(); it != g[i].adj.end(); ++it)
         {
+            // If it is not a nullptr (nullptr is an edge to vertex K (black square))
             if (it->second)
             {
-                // Serial.print(it->second->coords());
-                // Serial.print(" ");
-                std::cout << it->second->coords() << " ";
+                Serial.print(it->second->coords());
+                Serial.print(" ");
+                // std::cout << it->second->coords() << " ";
             }
         }
-        // Serial.println();
-        std::cout << "\n";
+        Serial.println();
+        // std::cout << "\n";
     }
 }

@@ -15,33 +15,29 @@
 
 void getAdj(Robot &r, Graph &g, Vertex *v)
 {
-
     // Pointer to auxiliary vertex
     Vertex *aux_v;
 
     // Get distances of the robot in every direction
-    r.getDistances();
+    r.getAllDistances();
 
     // If distance to nearest surface is more than 10 cm, then that is a possible path = adjacent vertex
     if (r.left_d > 10.0)
     {
         aux_v = g.get(v->left());
-        v->adj["left"] = aux_v;
-        aux_v->adj["right"] = v;
+        v->addEdge(aux_v, 180);
     }
 
     if (r.up_d > 10.0)
     {
         aux_v = g.get(v->up());
-        v->adj["up"] = aux_v;
-        aux_v->adj["down"] = v;
+        v->addEdge(aux_v, 90);
     }
 
     if (r.right_d > 10.0)
     {
         aux_v = g.get(v->right());
-        v->adj["right"] = aux_v;
-        aux_v->adj["left"] = v;
+        v->addEdge(aux_v, 0);
     }
 
     // It is not necessary to measure adjacent vertices backwards because
@@ -49,10 +45,15 @@ void getAdj(Robot &r, Graph &g, Vertex *v)
     // the vertex behind it (it has passed it before).
 }
 
-void zoneA(Robot& r)
+void zoneA(Robot &r)
 {
     // At the start of zoneA the robot always starts facing left, and in the middle of the starting square
     // r.facing(90)
+
+    // Initialize the counters for each color
+    int red = 0;
+    int green = 0;
+    int blue = 0;
 
     // Counter of visited vertices
     int v_counter = 0;
@@ -89,7 +90,7 @@ void zoneA(Robot& r)
     // String to save the direction of the next movement
     int next_dir;
 
-    // Loop while we are not at the square before the ramp checkpoint (i.e.: while 15 vertices haven't been visited)
+    // Loop while 15 vertices haven't been visited
     // When the while loop ends, the only remaining vertex in the stack will be the ramp checkpoint vertex
     while (v_counter != 15)
     {
@@ -98,7 +99,8 @@ void zoneA(Robot& r)
         // Remove the vertex from the stack as it is currently being visited
         stack.pop();
         // If it is the first time we visit the vertex then it is marked as visited
-        if (!v->visited) {
+        if (!v->visited)
+        {
             v_counter++;
             v->visited = true;
         }
@@ -109,17 +111,27 @@ void zoneA(Robot& r)
         // The order to add to the stack should be the reverse of the order we want to follow,
         // because a stack's order is LIFO. This means that the order to add the adjacent vertices should be
         // left -> up -> down -> right.
-        if (v->adj["left"] && !v->adj["left"]->visited) { stack.push(v->adj["left"]); }
-        if (v->adj["up"] && !v->adj["up"]->visited) { stack.push(v->adj["up"]); }
-        if (v->adj["down"] && !v->adj["down"]->visited) { stack.push(v->adj["down"]); }
-        if (v->adj["right"] && !v->adj["right"]->visited) { stack.push(v->adj["right"]); }
-        
+        if (v->adj.count(180) != 0 && !v->adj[180]->visited)
+        {
+            stack.push(v->adj[180]);
+        }
+        if (v->adj.count(90) != 0 && !v->adj[90]->visited)
+        {
+            stack.push(v->adj[90]);
+        }
+        if (v->adj.count(270) != 0 && !v->adj[270]->visited)
+        {
+            stack.push(v->adj[270]);
+        }
+        if (v->adj.count(0) != 0 && !v->adj[0]->visited)
+        {
+            stack.push(v->adj[0]);
+        }
+
         // Get the next vertex to visit in an auxiliary variable
         aux_v = stack.top();
         // Obtain direction to which the robot should move next
         next_dir = v->dir(*aux_v);
-
-
     }
 
     // Move to the finish checkpoint
