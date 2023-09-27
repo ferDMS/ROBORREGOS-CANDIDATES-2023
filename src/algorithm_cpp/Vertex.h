@@ -15,15 +15,13 @@ struct Vertex
     // Variables with default values
     std::string color; // Square color
     bool visited;      // Has the vertex been visited?
-    int max_edges;     // Number of edges taken
 
     // Variables always initialized with default values
     // Map of 4 pointers that point to connected vertices on all directions
     std::map<int, Vertex *> adj;
 
     // Constructors
-    Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn);
-    Vertex(int xIn, int yIn, int max_edgesIn);
+    Vertex(int xIn, int yIn, std::string colorIn);
     Vertex(int xIn, int yIn);
     Vertex();
 
@@ -36,23 +34,20 @@ struct Vertex
     void addEdge(Vertex *v, int direction);
 
     int distance(Vertex v);
-    String coords();
+    std::string coords();
 
     // Operators
     bool operator==(const Vertex &v) const;
 };
 
-// Constructor specifying coordinates, color, and max_edges of the vertex
-Vertex::Vertex(int xIn, int yIn, std::string colorIn, int max_edgesIn) : x(xIn), y(yIn), color(colorIn), max_edges(max_edgesIn), visited(false) {}
-
-// Constructor specifying only the coordinates and max_edges of the vertex, uses the constructor above
-Vertex::Vertex(int xIn, int yIn, int max_edgesIn) : Vertex(xIn, yIn, "", max_edgesIn) {}
+// Constructor specifying coordinates and color of the vertex
+Vertex::Vertex(int xIn, int yIn, std::string colorIn) : x(xIn), y(yIn), color(colorIn), visited(false) {}
 
 // Constructor specifying only the coordinates of the vertex, uses the constructor above
-Vertex::Vertex(int xIn, int yIn) : Vertex(xIn, yIn, -1) {}
+Vertex::Vertex(int xIn, int yIn) : x(xIn), y(yIn), color(""), visited(false) {}
 
-// Default constructor uses constructor above
-Vertex::Vertex() : Vertex(0, 0) {}
+// Default constructor that initializes default values for every attribute
+Vertex::Vertex() : x(0), y(0), color(""), visited(false) {}
 
 // The up(), down(), left(), and right() methods return a Vertex object of coordinates in that direction
 Vertex Vertex::up() { return Vertex(x, y + 1); }
@@ -95,12 +90,12 @@ void Vertex::addEdge(Vertex *v, int direction) {
 int Vertex::distance(Vertex v) { return abs(x - v.x + y - v.y); }
 
 // Return the formatted coordinates
-String Vertex::coords()
+std::string Vertex::coords()
 {
     std::stringstream ss;
     ss << "(" << x << ", " << y << ")";
     std::string coordinates = ss.str();
-    return coordinates.c_str();
+    return coordinates;
 }
 
 // Two vertices are the same if their coordinates are the same, which is their "naming convention"

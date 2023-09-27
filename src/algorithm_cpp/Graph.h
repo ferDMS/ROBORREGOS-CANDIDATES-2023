@@ -4,6 +4,7 @@
 #include <vector>
 #include <stack>
 #include <limits>
+#include <queue>
 
 #ifndef VERTEX_H
 #define VERTEX_H
@@ -15,9 +16,6 @@ struct Graph
 {
     // Number of vertices
     int n;
-
-    // Current position of exploration
-    Vertex* pos;
 
     // List of vertices in the graph
     std::vector<Vertex> vertices;
@@ -32,7 +30,7 @@ struct Graph
     Vertex *add(Vertex v);
 
     // Discover shortest path from source to destination using Breath First Search
-    void findPath(Vertex source, Vertex destination);
+    std::vector<Vertex> findPath(Vertex &source, Vertex &destination);
 
     // Operators
     Vertex &operator[](int index);
@@ -56,7 +54,6 @@ Graph::Graph(std::vector<Vertex> verticesIn)
 {
     n = vertices.size();
     vertices = verticesIn;
-    pos = get(Vertex(0, 0));
 }
 
 // Get pointer to vertex object from its coordinates
@@ -82,26 +79,26 @@ Vertex *Graph::add(Vertex v)
     return &vertices[n - 1];
 }
 
-void Graph::findPath(Vertex source, Vertex destination)
+// Algorithm to find shortest path from a source vertex to a destination vertex using Breath First Search (search by distance)
+std::vector<Vertex> Graph::findPath(Vertex &source, Vertex &destination)
 {
-    
-    /* 
-    TODO: CHANGE THIS IMPLEMENTATION FROM DIJKSTRA'S ALGORITHM INTO BFS
+    // Declare queue of vertices (vertices queued to be visited)
+    std::queue<int> queue;
+    // Declare array (because of static size) to save whether the iterated vertex i has been visited
+    bool visited[n];
+    // Declare array to save distances of the source vertex to each iterated vertex i
+    int distance[n];
+    // Declare array to save what the previous
+
     // Indices of source and destination on the vertices vector
     int s_index;
     int d_index;
-    // Array that saves the distance from the source to vertices[i]
-    int distance[n];
-    // True if there is a definitive (final) shortest path tree to vertices[i]
-    bool spt[n];
 
     // Initialize values
     for (int i = 0; i < n; i++)
     {
         // Infinite distance for vertices not yet encountered (we don't know how far they are)
         distance[i] = std::numeric_limits<int>::max();
-        // False for all vertices except source, as the shortest path tree is still to be discovered
-        spt[i] = 0;
 
         if (vertices[i] == source)
         {
@@ -120,7 +117,8 @@ void Graph::findPath(Vertex source, Vertex destination)
     {
         // Find shortest path
     }
-    */
+
+   return {Vertex(0,0)};
 }
 
 // Overload the [] operator to access vertices by index

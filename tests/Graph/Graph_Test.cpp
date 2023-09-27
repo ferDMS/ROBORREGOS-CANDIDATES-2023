@@ -6,7 +6,7 @@ int main() {
     Graph g;
 
     // Add vertices to the graph
-    g.add(Vertex(0,0,"yellow",3));
+    g.add(Vertex(0,0,"yellow"));
     g.add(Vertex(2,2));
     g.add(Vertex(4,4));
 
