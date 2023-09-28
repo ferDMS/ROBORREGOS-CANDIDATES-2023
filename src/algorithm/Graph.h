@@ -1,15 +1,20 @@
 #ifndef GRAPH
 #define GRAPH
 
-#include <vector>
-#include <stack>
-#include <limits>
-#include <queue>
+#ifndef ARDUINOSTL_H
+#define ARDUINOSTL_H
+#include "ArduinoSTL.h"
+#endif
 
 #ifndef VERTEX_H
 #define VERTEX_H
 #include "Vertex.h"
 #endif
+
+#include <vector>
+#include <queue>
+
+#define MAX_INT 2147483647
 
 // Struct to comprise Vertex objects and define graph traversal methods
 struct Graph
@@ -17,7 +22,6 @@ struct Graph
     // Number of vertices
     int n;
 
-    // List of vertices in the graph
     std::vector<Vertex> vertices;
 
     // Constructors
@@ -29,45 +33,31 @@ struct Graph
     Vertex *get(Vertex v);
     Vertex *add(Vertex v);
 
-    // Discover shortest path from source to destination using Breath First Search
-    std::vector<Vertex> findPath(Vertex &source, Vertex &destination);
+    // Discover shortest path from source to destination using Breath First Search. Returns pointer to first element of array.
+    std::vector<Vertex *> findPath(Vertex &source, Vertex &destination);
 
     // Operators
     Vertex &operator[](int index);
 };
 
 // Default constructor for an empty graph
-Graph::Graph()
-{
-    n = 0;
-}
+Graph::Graph() : n(0) {}
 
 // Constructor for a graph of n vertices
-Graph::Graph(int nIn)
-{
-    n = nIn;
-    vertices = std::vector<Vertex>(n, Vertex());
-}
+Graph::Graph(int nIn) : n(nIn), vertices( std::vector<Vertex>(n, Vertex()) ) {}
 
 // Constructor for a graph of already initialized vertices
-Graph::Graph(std::vector<Vertex> verticesIn)
-{
-    n = vertices.size();
-    vertices = verticesIn;
-}
+Graph::Graph(std::vector<Vertex> verticesIn) : n(verticesIn.size()), vertices(verticesIn) {}
 
 // Get pointer to vertex object from its coordinates
 Vertex *Graph::get(Vertex v)
 {
-    for (int i = 0; i < n; i++)
-    {
-        if (v == vertices[i])
-        {
+    for (int i = 0; i < n; i++) {
+        if (v == vertices[i]) {
             return &vertices[i];
         }
     }
-    // Serial.println("Vertex not found");
-    // std::cout << "Vertex not found" << std::endl;
+    Serial.println("Vertex not found");
     return nullptr;
 }
 
@@ -80,11 +70,12 @@ Vertex *Graph::add(Vertex v)
 }
 
 // Algorithm to find shortest path from a source vertex to a destination vertex using Breath First Search (search by distance)
-std::vector<Vertex> Graph::findPath(Vertex &source, Vertex &destination)
+std::vector<Vertex *> Graph::findPath(Vertex &source, Vertex &destination)
 {
-    // Declare queue of vertices (vertices queued to be visited)
-    std::queue<int> queue;
-    // Declare array (because of static size) to save whether the iterated vertex i has been visited
+    // Declare queue of maximum n vertices (vertices queued are to be visited)
+    // The integer queued represents the index for the vertex in the vertices vector
+    std::queue<int> queue[n];
+    // Declare array to save whether the iterated vertex i has been visited
     bool visited[n];
     // Declare array to save distances of the source vertex to each iterated vertex i
     int distance[n];
@@ -97,17 +88,15 @@ std::vector<Vertex> Graph::findPath(Vertex &source, Vertex &destination)
     // Initialize values
     for (int i = 0; i < n; i++)
     {
-        // Infinite distance for vertices not yet encountered (we don't know how far they are)
-        distance[i] = std::numeric_limits<int>::max();
+        // Maximum integer value distance for vertices not yet encountered (we don't know how far they are)
+        distance[i] = MAX_INT;
 
-        if (vertices[i] == source)
-        {
+        if (vertices[i] == source) {
             // Distance from source to source is always 0
             distance[i] = 0;
             s_index = i;
         }
-        if (vertices[i] == destination)
-        {
+        if (vertices[i] == destination) {
             d_index = i;
         }
     }
@@ -118,7 +107,7 @@ std::vector<Vertex> Graph::findPath(Vertex &source, Vertex &destination)
         // Find shortest path
     }
 
-   return {Vertex(0,0)};
+   return {};
 }
 
 // Overload the [] operator to access vertices by index

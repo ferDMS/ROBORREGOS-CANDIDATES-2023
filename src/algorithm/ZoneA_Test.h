@@ -1,14 +1,19 @@
-// #ifndef ARDUINOSTL_H
-// #define ARDUINOSTL_H
-// #include "ArduinoSTL.h"
-// #endif
+#ifndef ARDUINOSTL_H
+#define ARDUINOSTL_H
+#include "ArduinoSTL.h"
+#endif
 
 #ifndef GRAPH_H
 #define GRAPH_H
 #include "Graph.h"
 #endif
 
-#include <iostream>
+#ifndef ROBOT_H
+#define ROBOT_H
+#include "Robot.h"
+#endif
+
+#include <stack>
 
 void testZoneA(Graph &g)
 {
@@ -16,6 +21,8 @@ void testZoneA(Graph &g)
     stack.push(&g[1]);          // Push the root vertex $S$
     Vertex *v;                  // Pointer to memory space of visited vertex
     int counter = 1;            // Counter of visited vertices
+    String str_path;
+    str_path.reserve(300);
 
     // Loop while there are still vertices not completely explored (i.e.: while there is a paused vertex)
     while (!stack.empty())
@@ -27,29 +34,29 @@ void testZoneA(Graph &g)
         stack.pop();
 
         // If it is the first time we visit the vertex then it is marked as visited
-        if (!v->visited)
-        {
-            // Serial.print(counter);
-            // Serial.print(". ");
-            // Serial.println(v->coords());
-            std::cout << counter << ". " << v->coords() << std::endl;
+        if (!v->visited) {
+            str_path.concat(counter);
+            str_path.concat(". ");
+            str_path.concat(v->coords());
+            str_path.concat("   ");
+            Serial.println(str_path);
+            str_path = "";
             v->visited = true;
         }
-
         // Go through every possible adjacent vertex and schedule it for a visit if it hasn't been visited.
         // The order to add to the stack should be the reverse of the order we want to follow,
         // because a stack's order is LIFO. This means that the order to add the adjacent vertices should be
         // left -> up -> down -> right.
-        if (v->adj.count(180) != 0 && !v->adj[180]->visited) {
-            stack.push(v->adj[180]);
+        if (v->adj[2] != nullptr && !v->adj[2]->visited) {
+            stack.push(v->adj[2]);
         }
-        if (v->adj.count(90) != 0 && !v->adj[90]->visited) {
-            stack.push(v->adj[90]);
+        if (v->adj[1] != nullptr && !v->adj[1]->visited) {
+            stack.push(v->adj[1]);
         }
-        if (v->adj.count(270) != 0 && !v->adj[270]->visited) {
-            stack.push(v->adj[270]);
+        if (v->adj[3] != nullptr && !v->adj[3]->visited) {
+            stack.push(v->adj[3]);
         }
-        if (v->adj.count(0) != 0 && !v->adj[0]->visited) {
+        if (v->adj[0] != nullptr && !v->adj[0]->visited) {
             stack.push(v->adj[0]);
         }
 
@@ -57,31 +64,29 @@ void testZoneA(Graph &g)
     }
 }
 
-void zoneAEdgeInit(Graph &g, std::string &adj_string)
+void zoneAEdgeInit(Graph &g, char adj_string[79])
 {
     Vertex *vptr;
     int i = 0;
     int j = 1;
-    std::stringstream ss(adj_string);
-    std::string word;
+    String word;
 
-    while (std::getline(ss, word, ','))
-    {
-        // Define the new vertex to which assign edges
+    for (int k = 0; k<79; k+=5) {
+
         vptr = g.get(Vertex(i, j));
-        // Assign the edges specified on the string
-        if (word.find('l') != std::string::npos) {
-            vptr->adj[180] = g.get(vptr->left());
+        
+        if ('l' == adj_string[k] || 'l' == adj_string[k+1] || 'l' == adj_string[k+2] || 'l' == adj_string[k+3]) {
+            vptr->adj[2] = g.get(vptr->left());
         }
-        if (word.find('u') != std::string::npos) {
-            vptr->adj[90] = g.get(vptr->up());
+        if ('u' == adj_string[k] || 'u' == adj_string[k+1] || 'u' == adj_string[k+2] || 'u' == adj_string[k+3]) {
+            vptr->adj[1] = g.get(vptr->up());
         }
-        if (word.find('d') != std::string::npos) {
-            vptr->adj[270] = g.get(vptr->down());
+        if ('d' == adj_string[k] || 'd' == adj_string[k+1] || 'd' == adj_string[k+2] || 'd' == adj_string[k+3]) {
+            vptr->adj[3] = g.get(vptr->down());
         }
-        if (word.find('r') != std::string::npos) {
+        if ('r' == adj_string[k] || 'r' == adj_string[k+1] || 'r' == adj_string[k+2] || 'r' == adj_string[k+3]) {
             vptr->adj[0] = g.get(vptr->right());
-        }
+        }        
 
         // Go to the next row
         j--;
@@ -118,7 +123,7 @@ void zoneAGraphInit(Graph &g)
     // Define edges between vertices as a formatted string from top-right to bottom-left
     // The order of vertices matches the order above, and their coordinates
     // l = left, d = down, u = up, r = right
-    std::string adj_string = "ld  ,ud  ,lu  ,ldr ,uld ,ur  ,lr  ,lr  ,l   ,rd  ,lurd,ulr ,d   ,ru  ,r   ,r   ";
+    char adj_string[79] = "ld  ,ud  ,lu  ,ldr ,uld ,ur  ,lr  ,lr  ,l   ,rd  ,lurd,ulr ,d   ,ru  ,r   ,r   ";
     //       Vertex #          0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
 
     // Function to initialize the edges based on the formatted string.
@@ -127,23 +132,17 @@ void zoneAGraphInit(Graph &g)
     // Display edges of all vertices
     for (int i = 0; i < g.n; i++)
     {
-        // Serial.print("Vertex ");
-        // Serial.print(g[i].coords());
-        // Serial.print(": ");
-        std::cout << "Vertex " << g[i].coords() << ": ";
+        // Serial.println( String("Vertex " + g[i].coords() + ": ") );
 
-        // For every edge found for vertex i
-        for (std::map<int, Vertex *>::iterator it = g[i].adj.begin(); it != g[i].adj.end(); ++it)
+        // For every possible edge found for vertex i
+        for (int j = 0; j < 4; j++)
         {
-            // If it is not a nullptr (nullptr is an edge to vertex K (black square))
-            if (it->second)
+            // If it is not a nullptr (nullptr is means the edge doesn't exist)
+            if (g[i].adj[j])
             {
-                // Serial.print(it->second->coords());
-                // Serial.print(" ");
-                std::cout << it->second->coords() << " ";
+                // Serial.println( String(g[i].adj[j]->coords() + " ") );
             }
         }
         // Serial.println();
-        std::cout << "\n";
     }
 }

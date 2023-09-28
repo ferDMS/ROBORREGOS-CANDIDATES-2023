@@ -1,11 +1,6 @@
 #ifndef VERTEX
 #define VERTEX
 
-#include <sstream>
-#include <cmath>
-#include <string>
-#include <map>
-
 struct Vertex
 {
     // Variables
@@ -13,15 +8,16 @@ struct Vertex
     int y;
 
     // Variables with default values
-    std::string color; // Square color
+    String color;       // Square color
     bool visited;      // Has the vertex been visited?
 
     // Variables always initialized with default values
-    // Map of 4 pointers that point to connected vertices on all directions
-    std::map<int, Vertex *> adj;
+    // Array of size 4 of pointers to vertices, each for a direction to other adjacent vertices objects
+    // [0] - right, [1] - up, [2] - left, [3] - down
+    Vertex *adj[4] = {nullptr, nullptr, nullptr, nullptr};
 
     // Constructors
-    Vertex(int xIn, int yIn, std::string colorIn);
+    Vertex(int xIn, int yIn, String colorIn);
     Vertex(int xIn, int yIn);
     Vertex();
 
@@ -30,20 +26,20 @@ struct Vertex
     Vertex down();
     Vertex left();
     Vertex right();
-    int dir(Vertex v);
-    void addEdge(Vertex *v, int direction);
+    String direction(Vertex &v);
+    void addEdge(Vertex *v, String direction);
 
     int distance(Vertex v);
-    std::string coords();
+    String coords();
 
     // Operators
     bool operator==(const Vertex &v) const;
 };
 
 // Constructor specifying coordinates and color of the vertex
-Vertex::Vertex(int xIn, int yIn, std::string colorIn) : x(xIn), y(yIn), color(colorIn), visited(false) {}
+Vertex::Vertex(int xIn, int yIn, String colorIn) : x(xIn), y(yIn), color(colorIn), visited(false) {}
 
-// Constructor specifying only the coordinates of the vertex, uses the constructor above
+// Constructor specifying only the coordinates of the vertex
 Vertex::Vertex(int xIn, int yIn) : x(xIn), y(yIn), color(""), visited(false) {}
 
 // Default constructor that initializes default values for every attribute
@@ -56,46 +52,54 @@ Vertex Vertex::left() { return Vertex(x - 1, y); }
 Vertex Vertex::right() { return Vertex(x + 1, y); }
 
 // Specify an adjacent vector and return the direction to which it is found
-int Vertex::dir(Vertex v)
+String Vertex::direction(Vertex &v)
 {
-    if (left() == v)
-    {
-        return 180;
-    }
-    else if (up() == v)
-    {
-        return 90;
-    }
-    else if (right() == v)
-    {
-        return 0;
-    }
-    else if (down() == v)
-    {
-        return 270;
-    }
-    else
-    {
-        return 1;
+    if (left() == v) {
+        return "left";
+    } else if (up() == v) {
+        return "up";
+    } else if (right() == v) {
+        return "right";
+    } else if (down() == v) {
+        return "down";
+    } else {
+        return "";
     }
 }
 
 // Add an undirected edge between the object and a Vertex v
-void Vertex::addEdge(Vertex *v, int direction) {
-    adj[direction] = v;
-    v->adj[(direction + 180) % 360] = this;
+void Vertex::addEdge(Vertex *v, String direction)
+{
+    if (direction == "right") {
+        adj[0] = v;
+        v->adj[2] = this;
+    } else if (direction == "up") {
+        adj[1] = v;
+        v->adj[3] = this;
+    } else if (direction == "left") {
+        adj[2] = v;
+        v->adj[0] = this;
+    } else if (direction == "down") {
+        adj[3] = v;
+        v->adj[1] = this;
+    }
 }
 
 // Amount of edges needed to get to a discoverable Vertex v
-int Vertex::distance(Vertex v) { return abs(x - v.x + y - v.y); }
+int Vertex::distance(Vertex v)
+{
+    int dist = x - v.x + y - v.y;
+    if (dist < 0) {
+        return dist * (-1);
+    } else {
+        return dist;
+    }
+}
 
 // Return the formatted coordinates
-std::string Vertex::coords()
+String Vertex::coords()
 {
-    std::stringstream ss;
-    ss << "(" << x << ", " << y << ")";
-    std::string coordinates = ss.str();
-    return coordinates;
+    return String( "(" + String(x) + ", " + String(y) + ")" );
 }
 
 // Two vertices are the same if their coordinates are the same, which is their "naming convention"

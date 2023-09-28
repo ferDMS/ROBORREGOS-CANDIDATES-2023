@@ -1,8 +1,3 @@
-// #ifndef ARDUINOSTL_H
-// #define ARDUINOSTL_H
-// #include "ArduinoSTL.h"
-// #endif
-
 #ifndef GRAPH_H
 #define GRAPH_H
 #include "Graph.h"
@@ -13,10 +8,15 @@
 #include "Robot.h"
 #endif
 
-#include <utility>  // For std::pair
+#include <utility>
+#include <stack>
 
 void zoneA(Robot &r)
 {
+
+    // Test Serial
+    Serial.println("Hello");
+
     // At the start of zoneA the robot always starts facing left, and in the middle of the starting square
     // r.facing(90)
 
@@ -56,7 +56,7 @@ void zoneA(Robot &r)
     stack.push(prev_v);
 
     // Loop while there are still vertices left to visit (while the stack isn't empty) except for the final ramp checkpoint
-    // When the while loop ends, the only remaining vertex in the stack will be the ramp checkpoint vertex
+    // When the while loop ends, the only remaining vertex to visit will be the ramp checkpoint vertex
     // In the loop we basically:
         // 1. Get next unvisited vertex (top vertex) and mark it as visited ($E$ square exception)
         // 2. Calculate a path to the vertex and make the robot follow it (black square exception)
@@ -64,6 +64,7 @@ void zoneA(Robot &r)
         // 4. Detect the adjacent vertices (black square adj exception)
         // 5. Add unvisited adj vertices to stack in correct priority order
         // 6. Save current vertex as previous vertex for next path calculation and next iteration
+
     while (!stack.empty())
     {
 
@@ -79,57 +80,64 @@ void zoneA(Robot &r)
         // to continue with the rest of the vertices before leaving Zone A.
         if (v == g.get(Vertex(-5, 1))) { continue; }
 
-        // The stack only contains unvisited vertices, so they always have to be set to visited
-        // Doing this after the final checkpoint skip condition allows that vertex to remain as unvisited
+        // The stack should only contain unvisited vertices, except for vertices found two times from different edges
+        // To avoid visiting repeated vertices more than once, we skip the iteration if the vertex is visited
+        if (v->visited) { continue; }
+        
+        // Mark the unvisited vertex as visited
+        // Doing this after the final checkpoint skip condition allows the ramp vertex to remain as unvisited
         v->visited = true;
 
 
         // 2. Calculate a path to the vertex and make the robot follow it (black square exception)
         // --------------------------------------------------------------------------------------
-        // Find vertex path to the destination vertex
-        std::vector<Vertex> path_v = g.findPath(*prev_v, *v);
-
-        // Conversion of the vertex path into a direction and distance path
-        std::vector< std::pair<int, double> > path_d;
-        for (int i = 0; i < path_v.size(); i++) {
-            // perform conversion and save as vector of direction and distance pairs
-
-            // OPTIONALLY HERE WE CAN OPTIMIZE FOR SAME DIRECTION CONNECTED VERTICES (so we don't have to stop)
-                // consider that the iteration variable must be manually increased for each skipped stop in here
-                // consider that the last element of the path (destination) must not be included in optimization and be a separate and last element
-        }
-
-        // Turn off the led before we leave the current vertex so that it can be turned on again when arriving to the destination vertex
-        r.rgb("black");
-
-        // Make the robot follow the path up to one vertex before the destination (if there is such path)
-        // These moves will be simple face() and move() methods. 
-        for (int i = 0; i < path_d.size() - 1; i++)
+        // If the source vertex is exactly the same as the destination vertex then we do nothing
+        if (!(prev_v == v))
         {
-            // Function to make the robot look forward to the next path move
-            r.face(path_d[i].first);
-            // Function to make the robot move the distance specified on the path
-            r.move(path_d[i].second);
-        }
+            // Find vertex path to the destination vertex
+            std::vector<Vertex *> path_v = g.findPath(*prev_v, *v);
 
-        // Make the robot slowly traverse to the destination vertex while it checks its color sensor (to detect a black square rapidly)
-        // The last element of the path vector will always be the destination, so smartColorMove() should only be applied to this last element
-    
-        // Function to make the robot look forward to the destination vertex
-        r.face(path_d[path_d.size()-1].first);
-        // Function to make the robot move to the destination but go back if the square is black 
-        bool valid_move = r.smartColorMove(path_d[path_d.size()-1].second, "black");
-        if (!valid_move) {
-            // Set the black square as found
-            k_found = 1;
-            // Save the coordinates of the black square
-            k_vertex = path_v[path_v.size()-1];
-            // Whatever distance was traversed, go back in reverse
-            r.move((-1.0) * r.last_traversed);
-            // Skip current iteration as the objective of this iteration was only to gain info about black square
-            continue;
-        }
+            // Conversion of the vertex path into a direction and distance path
+            std::vector< std::pair<String, double> > path_d;
+            for (int i = 0; i < path_v.size(); i++) {
+                // perform conversion and save as vector of direction and distance pairs
 
+                // OPTIONALLY HERE WE CAN OPTIMIZE FOR SAME DIRECTION CONNECTED VERTICES (so we don't have to stop)
+                    // consider that the iteration variable must be manually increased for each skipped stop in here
+                    // consider that the last element of the path (destination) must not be included in optimization and be a separate and last element
+            }
+
+            // Turn off the led before we leave the current vertex so that it can be turned on again when arriving to the destination vertex
+            r.rgb("black");
+
+            // Make the robot follow the path up to one vertex before the destination (if there is such path)
+            // These moves will be simple face() and move() methods. 
+            for (int i = 0; i < path_d.size() - 1; i++)
+            {
+                // Function to make the robot look forward to the next path move
+                r.face(path_d[i].first);
+                // Function to make the robot move the distance specified on the path
+                r.move(path_d[i].second);
+            }
+
+            // Make the robot slowly traverse to the destination vertex while it checks its color sensor (to detect a black square rapidly)
+            // The last element of the path vector will always be the destination, so smartColorMove() should only be applied to this last element
+        
+            // Function to make the robot look forward to the destination vertex
+            r.face(path_d[path_d.size()-1].first);
+            // Function to make the robot move to the destination but go back if the square is black 
+            bool valid_move = r.smartColorMove(path_d[path_d.size()-1].second, "black");
+            if (!valid_move) {
+                // Set the black square as found
+                k_found = 1;
+                // Save the coordinates of the black square
+                k_vertex = *path_v[path_v.size()-1];
+                // Whatever distance was traversed, go back in reverse
+                r.move((-1.0) * r.last_traversed);
+                // Skip current iteration as the objective of this iteration was only to gain info about black square
+                continue;
+            }
+        }
 
         // 3. Get the color of the just-visited vertex and display it with the RGB LED
         // ---------------------------------------------------------------------------
@@ -156,18 +164,17 @@ void zoneA(Robot &r)
         // Get distances of the robot in every direction
         r.getAllDistances();
 
-        // If distance to nearest surface is more than 10 cm and the black square has not been found, then that is a possible path = adjacent vertex
+        // If distance to nearest surface is more than min_adj (in cm) and the black square has not been found, then that is a possible path = adjacent vertex
         // or if the black square has been found, then its coordinates must not match the adjacent vertex coordinates to be a possible path
         if ( ( r.left_d > min_adj && !k_found ) || ( r.left_d > min_adj && k_found && !(k_vertex == v->left()) ) ) {
-            v->addEdge( g.get(v->left()) , 180);
+            v->addEdge( g.get(v->left()) , "left");
         }
         if ( ( r.up_d > min_adj && !k_found ) || ( r.up_d > min_adj && k_found && !(k_vertex == v->up()) ) ) {
-            v->addEdge( g.get(v->up()) , 90);
+            v->addEdge( g.get(v->up()) , "up");
         }
         if ( (r.right_d > min_adj && !k_found) || ( r.right_d > min_adj && k_found && !(k_vertex == v->right()) ) ) {
-            v->addEdge( g.get(v->right()) , 0);
+            v->addEdge( g.get(v->right()) , "right");
         }
-
 
 
         // 5. Add unvisited adj vertices to stack in correct priority order
@@ -176,23 +183,19 @@ void zoneA(Robot &r)
         // This means that the order to add the adjacent vertices should be left -> up -> down -> right.
 
         // Loop for every direction that might have adjacent vertices, in order
-        for (int i = 0; i < 4; i++)
-        {
-            int direction;
-            if (i == 0) {
-                direction = 180;
-            } else if (i == 1) {
-                direction = 90;
-            } else if (i == 2) {
-                direction = 270;
-            } else if (i == 3) {
-                direction = 0;
-            }
-            
-            // If there is an adjacent vertex in that direction and it is unvisited, then we schedule it for visit later (add to stack)
-            if (v->adj.count(direction) != 0 && !v->adj[direction]->visited) {
-                stack.push(v->adj[direction]);
-            }
+
+        // If there is an adjacent vertex in that direction and it is unvisited, then we schedule it for a visit (add to stack)
+        if (v->adj[2] != nullptr && !v->adj[2]->visited) {
+            stack.push(v->adj[2]);  // Left
+        }
+        if (v->adj[1] != nullptr && !v->adj[1]->visited) {
+            stack.push(v->adj[1]);  // Up
+        }
+        if (v->adj[3] != nullptr && !v->adj[3]->visited) {
+            stack.push(v->adj[3]);  // Down
+        }
+        if (v->adj[0] != nullptr && !v->adj[0]->visited) {
+            stack.push(v->adj[0]);  // Right
         }
 
 
@@ -201,7 +204,10 @@ void zoneA(Robot &r)
         prev_v = v;
     }
 
-    // TODO: CALCULATE AND TRAVERSE PATH TO CLOSEST UNIQUE COLOR (5 APPEARANCES) VERTEX AND TURN ON LED
+
+    // 7. Calculate and traverse path to closest unique color (5 total appearances) vertex and turn on RGB LED with color
+    // ------------------------------------------------------------------------------------------------------------------
+
     // TODO: CALCULATE AND TRAVERSE PATH TO VERTEX(-4,1)
     // TODO: MOVE TO FINISH CHECKPOINT AND GRAB CUBE
 
