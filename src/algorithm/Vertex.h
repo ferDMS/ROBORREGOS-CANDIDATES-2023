@@ -99,7 +99,13 @@ int Vertex::distance(Vertex v)
 // Return the formatted coordinates
 String Vertex::coords()
 {
-    return String( "(" + String(x) + ", " + String(y) + ")" );
+    String str;
+    str.concat("(");
+    str.concat(x);
+    str.concat(", ");
+    str.concat(y);
+    str.concat(")");
+    return str;
 }
 
 // Two vertices are the same if their coordinates are the same, which is their "naming convention"

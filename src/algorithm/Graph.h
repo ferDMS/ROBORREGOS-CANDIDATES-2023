@@ -32,9 +32,10 @@ struct Graph
     // Methods
     Vertex *get(Vertex v);
     Vertex *add(Vertex v);
+    int find(Vertex v);
 
     // Discover shortest path from source to destination using Breath First Search. Returns pointer to first element of array.
-    std::vector<Vertex *> findPath(Vertex &source, Vertex &destination);
+    std::vector<Vertex *> findPath(Vertex source, Vertex destination);
 
     // Operators
     Vertex &operator[](int index);
@@ -47,7 +48,7 @@ Graph::Graph() : n(0) {}
 Graph::Graph(int nIn) : n(nIn), vertices( std::vector<Vertex>(n, Vertex()) ) {}
 
 // Constructor for a graph of already initialized vertices
-Graph::Graph(std::vector<Vertex> verticesIn) : n(verticesIn.size()), vertices(verticesIn) {}
+Graph::Graph(std::vector<Vertex> verticesIn) : vertices(verticesIn), n(vertices.size())  {}
 
 // Get pointer to vertex object from its coordinates
 Vertex *Graph::get(Vertex v)
@@ -69,45 +70,112 @@ Vertex *Graph::add(Vertex v)
     return &vertices[n - 1];
 }
 
-// Algorithm to find shortest path from a source vertex to a destination vertex using Breath First Search (search by distance)
-std::vector<Vertex *> Graph::findPath(Vertex &source, Vertex &destination)
+int Graph::find(Vertex v)
 {
-    // Declare queue of maximum n vertices (vertices queued are to be visited)
-    // The integer queued represents the index for the vertex in the vertices vector
-    std::queue<int> queue[n];
-    // Declare array to save whether the iterated vertex i has been visited
-    bool visited[n];
-    // Declare array to save distances of the source vertex to each iterated vertex i
-    int distance[n];
-    // Declare array to save what the previous
-
-    // Indices of source and destination on the vertices vector
-    int s_index;
-    int d_index;
-
-    // Initialize values
     for (int i = 0; i < n; i++)
     {
-        // Maximum integer value distance for vertices not yet encountered (we don't know how far they are)
-        distance[i] = MAX_INT;
-
-        if (vertices[i] == source) {
-            // Distance from source to source is always 0
-            distance[i] = 0;
-            s_index = i;
+        if (v == vertices[i]) {
+            return i;
         }
-        if (vertices[i] == destination) {
-            d_index = i;
+    }
+    Serial.println("Vertex not found in the graph");
+    return -1;
+}
+
+// Algorithm to find shortest path from a source vertex to a destination vertex using Breath First Search (search by distance)
+std::vector<Vertex *> Graph::findPath(Vertex source, Vertex destination)
+{
+    std::queue<Vertex *> queue;
+    const int maxVertices = vertices.size();
+    bool visited[maxVertices];
+    Vertex *parent[maxVertices];
+
+    // Find the indices of the source and destination vertices
+    int sourceIndex = -1, destinationIndex = -1;
+    for (int i = 0; i < maxVertices; ++i)
+    {
+        visited[i] = 0;
+        if (vertices[i] == source)
+        {
+            sourceIndex = i;
+        }
+        if (vertices[i] == destination)
+        {
+            destinationIndex = i;
         }
     }
 
-    // Find shortest path to each vertex in vertices vector
-    for (int i = 0; i < n; i++)
+    if (sourceIndex == -1 || destinationIndex == -1)
     {
-        // Find shortest path
+        // Source or destination vertex not found
+        Serial.println("Source or destination vertex not found");
+        return std::vector<Vertex *>();
     }
 
-   return {};
+    // Enqueue the source vertex
+    queue.push(&vertices[sourceIndex]);
+    visited[sourceIndex] = true;
+
+    // Perform BFS
+    while (!queue.empty())
+    {
+        Vertex *current = queue.front();
+        queue.pop();
+
+        // Serial.print("Current: ");
+        // Serial.println(current->coords());
+
+        if (current == &vertices[destinationIndex])
+        {
+            // Serial.println("Found final destination");
+            // Reconstruct the path by backtracking from the destination to the source
+            std::vector<Vertex *> path;
+            int currentVertexIndex = find(*current);
+
+            while (currentVertexIndex != sourceIndex)
+            {
+                path.push_back(current);
+                currentVertexIndex = find(*parent[currentVertexIndex]);
+                current = &vertices[currentVertexIndex];
+            }
+
+            path.push_back(&vertices[sourceIndex]);
+            // Serial.println("Returning path from source to destination");
+            std::reverse(path.begin(), path.end()); // Reverse the path to start from the source
+            return path;
+        }
+
+        for (int i = 0; i < 4; ++i) // Assuming 4 possible directions
+        {
+            Vertex *neighbor = current->adj[i];
+
+            if (neighbor != nullptr)
+            {
+
+                // Serial.print("Testing for ");
+                // Serial.println(neighbor->coords());
+
+                int neighborIndex = find(*neighbor);
+                if (!visited[neighborIndex])
+                {
+
+                    // Serial.print("Added to queue: ");
+                    // Serial.println(neighbor->coords());
+
+                    queue.push(neighbor);
+                    visited[neighborIndex] = true;
+                    parent[neighborIndex] = current;
+                }
+            }
+        }
+
+        // Serial.print("Queue length: ");
+        // Serial.println(queue.size());
+    }
+
+    // If no path is found, return an empty vector
+    Serial.println("No path was found, returning empty vector");
+    return std::vector<Vertex *>();
 }
 
 // Overload the [] operator to access vertices by index

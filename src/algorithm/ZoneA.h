@@ -3,22 +3,22 @@
 #include "Graph.h"
 #endif
 
+#ifndef ARDUINOSTL_H
+#define ARDUINOSTL_H
+#include "ArduinoSTL.h"
+#endif
+
 #ifndef ROBOT_H
 #define ROBOT_H
 #include "Robot.h"
 #endif
 
-#include <utility>
 #include <stack>
 
 void zoneA(Robot &r)
 {
-
-    // Test Serial
-    Serial.println("Hello");
-
     // At the start of zoneA the robot always starts facing left, and in the middle of the starting square
-    // r.facing(90)
+    r.facing = "down";
 
     // Initialize the counters for each color
     int red = 0;
@@ -30,7 +30,7 @@ void zoneA(Robot &r)
     Vertex k_vertex;
 
     // Define the minimum ultrasonic detected distance at which an adjacent vertex can be detected
-    double min_adj = 10.0;
+    double min_adj = 20.0;
 
     // Initializing each vertex with coordinate values
     std::vector<Vertex> vertices;
@@ -44,6 +44,8 @@ void zoneA(Robot &r)
 
     // Graph object to save the map of the 16 vertices present in ZoneA
     Graph g(vertices);
+
+    Serial.println("Initialized graph");
 
     // Stack of vertices. The top vertex is the one the robot should be standing in.
     std::stack<Vertex *> stack;
@@ -65,8 +67,10 @@ void zoneA(Robot &r)
         // 5. Add unvisited adj vertices to stack in correct priority order
         // 6. Save current vertex as previous vertex for next path calculation and next iteration
 
+    Serial.println("Starting DFS traversal");
     while (!stack.empty())
     {
+
 
         // 1. Get next unvisited vertex (top vertex) and mark it as visited ($E$ square exception)
         // --------------------------------------------------------------------------------------
@@ -75,6 +79,9 @@ void zoneA(Robot &r)
 
         // Remove the vertex from the stack as it is going to be visited this iteration
         stack.pop();
+
+        Serial.print("Starting loop iteration with Vertex: ");
+        Serial.println(v->coords());
 
         // If the vertex to move to is the final ramp checkpoint vertex then we skip the iteration
         // to continue with the rest of the vertices before leaving Zone A.
@@ -98,17 +105,13 @@ void zoneA(Robot &r)
             std::vector<Vertex *> path_v = g.findPath(*prev_v, *v);
 
             // Conversion of the vertex path into a direction and distance path
-            std::vector< std::pair<String, double> > path_d;
-            for (int i = 0; i < path_v.size(); i++) {
-                // perform conversion and save as vector of direction and distance pairs
-
-                // OPTIONALLY HERE WE CAN OPTIMIZE FOR SAME DIRECTION CONNECTED VERTICES (so we don't have to stop)
-                    // consider that the iteration variable must be manually increased for each skipped stop in here
-                    // consider that the last element of the path (destination) must not be included in optimization and be a separate and last element
-            }
+            // Starts at 1 because the path returned by the findPath method includes the source at index 0, for which no moves are necessary
+            std::vector< std::pair<String, double> > path_d = r.convertPath(path_v);
 
             // Turn off the led before we leave the current vertex so that it can be turned on again when arriving to the destination vertex
             r.rgb("black");
+
+            Serial.println("Moving to current vertex");
 
             // Make the robot follow the path up to one vertex before the destination (if there is such path)
             // These moves will be simple face() and move() methods. 
@@ -139,6 +142,8 @@ void zoneA(Robot &r)
             }
         }
 
+        Serial.println("Moved to the current vertex");
+
         // 3. Get the color of the just-visited vertex and display it with the RGB LED
         // ---------------------------------------------------------------------------
         // The RGB LED should already be showing the color with the smartColorMove() method to make it visible for longer
@@ -154,7 +159,9 @@ void zoneA(Robot &r)
         r.rgb(r.color);
         // Small delay to make visible the LED's color (precaution if the code runs really fast through the next operations)
         // TODO: UNCOMMENT
-        // delay(1000);
+        delay(1000);
+
+        Serial.println("Got color and displayed it");
 
 
         // 4. Detect the adjacent vertices (black square adj exception)
@@ -164,16 +171,30 @@ void zoneA(Robot &r)
         // Get distances of the robot in every direction
         r.getAllDistances();
 
+        Serial.print("Got the following adjacent sides vertices: ");
+
         // If distance to nearest surface is more than min_adj (in cm) and the black square has not been found, then that is a possible path = adjacent vertex
         // or if the black square has been found, then its coordinates must not match the adjacent vertex coordinates to be a possible path
+
         if ( ( r.left_d > min_adj && !k_found ) || ( r.left_d > min_adj && k_found && !(k_vertex == v->left()) ) ) {
             v->addEdge( g.get(v->left()) , "left");
+            Serial.print(v->left().coords());
+            Serial.print("   ");
         }
         if ( ( r.up_d > min_adj && !k_found ) || ( r.up_d > min_adj && k_found && !(k_vertex == v->up()) ) ) {
             v->addEdge( g.get(v->up()) , "up");
+            Serial.print(v->up().coords());
+            Serial.print("   ");
         }
         if ( (r.right_d > min_adj && !k_found) || ( r.right_d > min_adj && k_found && !(k_vertex == v->right()) ) ) {
             v->addEdge( g.get(v->right()) , "right");
+            Serial.print(v->right().coords());
+            Serial.println("   ");
+        }
+        if ( (r.down_d > min_adj && !k_found) || ( r.down_d > min_adj && k_found && !(k_vertex == v->down()) ) ) {
+            v->addEdge( g.get(v->down()) , "down");
+            Serial.print(v->down().coords());
+            Serial.println("   ");
         }
 
 
@@ -198,15 +219,22 @@ void zoneA(Robot &r)
             stack.push(v->adj[0]);  // Right
         }
 
+        Serial.println("Added unvisited adjacent vertices to stack");
+
 
         // 6. Save current vertex as previous vertex for next path calculation and next iteration
         // --------------------------------------------------------------------------------------
         prev_v = v;
+
+        Serial.println("Restarting loop");
     }
 
 
     // 7. Calculate and traverse path to closest unique color (5 total appearances) vertex and turn on RGB LED with color
     // ------------------------------------------------------------------------------------------------------------------
+
+    
+    // std::vector<Vertex *> path = g.findPath(&prev_v, Vertex(-4, 1));
 
     // TODO: CALCULATE AND TRAVERSE PATH TO VERTEX(-4,1)
     // TODO: MOVE TO FINISH CHECKPOINT AND GRAB CUBE

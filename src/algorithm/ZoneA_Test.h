@@ -15,14 +15,16 @@
 
 #include <stack>
 
-void testZoneA(Graph &g)
+void testZoneA(Robot& r, Graph &g)
 {
     std::stack<Vertex *> stack; // Stack of paused vertices
     stack.push(&g[1]);          // Push the root vertex $S$
     Vertex *v;                  // Pointer to memory space of visited vertex
     int counter = 1;            // Counter of visited vertices
     String str_path;
-    str_path.reserve(300);
+
+    // Serial.println("DFS Traversal of graph:");
+    // Serial.println();
 
     // Loop while there are still vertices not completely explored (i.e.: while there is a paused vertex)
     while (!stack.empty())
@@ -35,12 +37,12 @@ void testZoneA(Graph &g)
 
         // If it is the first time we visit the vertex then it is marked as visited
         if (!v->visited) {
-            str_path.concat(counter);
-            str_path.concat(". ");
-            str_path.concat(v->coords());
-            str_path.concat("   ");
-            Serial.println(str_path);
-            str_path = "";
+            // str_path.concat(counter);
+            // str_path.concat(". ");
+            // str_path.concat(v->coords());
+            // str_path.concat("   ");
+            // Serial.println(str_path);
+            // str_path = "";
             v->visited = true;
         }
         // Go through every possible adjacent vertex and schedule it for a visit if it hasn't been visited.
@@ -62,6 +64,33 @@ void testZoneA(Graph &g)
 
         counter++;
     }
+    Serial.println();
+    Serial.println("Path");
+    // Print the vertices path to go from the starting vertex to the final checkpoint vertex using the graph configuration edges
+    std::vector<Vertex *> path;
+    path = g.findPath(Vertex(-1,-1), Vertex(-5,1));
+
+    // Serial.println(path.size());
+
+    // for (int i = 0; i < path.size(); i++) {
+    //     delay(300);
+    //     Serial.print(i);
+    //     Serial.print(". ");
+    //     Serial.println(path[i]->coords());
+    // }
+
+    std::vector<std::pair<String, double> > path_d = r.convertPath(path);
+
+    // for (int i = 0; i < path_d.size(); i++) {
+    //     delay(300);
+    //     Serial.print(i);
+    //     Serial.print(". ");
+    //     Serial.print("   Direction: ");
+    //     Serial.print(path_d[i].first);
+    //     Serial.print("          Distance: ");
+    //     Serial.println(path_d[i].second);
+    // }
+
 }
 
 void zoneAEdgeInit(Graph &g, char adj_string[79])
@@ -69,9 +98,8 @@ void zoneAEdgeInit(Graph &g, char adj_string[79])
     Vertex *vptr;
     int i = 0;
     int j = 1;
-    String word;
 
-    for (int k = 0; k<79; k+=5) {
+    for (int k = 0; k < 79; k+=5) {
 
         vptr = g.get(Vertex(i, j));
         
@@ -103,7 +131,7 @@ void zoneAEdgeInit(Graph &g, char adj_string[79])
 void zoneAGraphInit(Graph &g)
 {
     // Add the test case vertices
-    g[0] = Vertex(0, 1, "green");
+    g[0] = Vertex(0, 1, "black");
     g[1] = Vertex(0, 0, "yellow");
     g[2] = Vertex(0, -1, "red");
     g[3] = Vertex(-1, 1, "blue");
@@ -112,7 +140,7 @@ void zoneAGraphInit(Graph &g)
     g[6] = Vertex(-2, 1, "red");
     g[7] = Vertex(-2, 0, "blue");
     g[8] = Vertex(-2, -1, "blue");
-    g[9] = Vertex(-3, 1, "black");
+    g[9] = Vertex(-3, 1, "green");
     g[10] = Vertex(-3, 0, "green");
     g[11] = Vertex(-3, -1, "red");
     g[12] = Vertex(-4, 1, "blue");
@@ -123,8 +151,8 @@ void zoneAGraphInit(Graph &g)
     // Define edges between vertices as a formatted string from top-right to bottom-left
     // The order of vertices matches the order above, and their coordinates
     // l = left, d = down, u = up, r = right
-    char adj_string[79] = "ld  ,ud  ,lu  ,ldr ,uld ,ur  ,lr  ,lr  ,l   ,rd  ,lurd,ulr ,d   ,ru  ,r   ,r   ";
-    //       Vertex #          0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
+    char adj_string[79] = "    ,ld  ,u   ,ld  ,ludr,ul  ,lr  ,r   ,lr  ,lrd ,uld ,ulr ,rdl ,urd ,ur  ,r   ";
+    //       Vertex #       0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
 
     // Function to initialize the edges based on the formatted string.
     zoneAEdgeInit(g, adj_string);
@@ -132,7 +160,9 @@ void zoneAGraphInit(Graph &g)
     // Display edges of all vertices
     for (int i = 0; i < g.n; i++)
     {
-        // Serial.println( String("Vertex " + g[i].coords() + ": ") );
+        // Serial.print("Vertex ");
+        // Serial.print(g[i].coords());
+        // Serial.print(": ");
 
         // For every possible edge found for vertex i
         for (int j = 0; j < 4; j++)
@@ -140,7 +170,8 @@ void zoneAGraphInit(Graph &g)
             // If it is not a nullptr (nullptr is means the edge doesn't exist)
             if (g[i].adj[j])
             {
-                // Serial.println( String(g[i].adj[j]->coords() + " ") );
+                // Serial.print(g[i].adj[j]->coords());
+                // Serial.print("   ");
             }
         }
         // Serial.println();
